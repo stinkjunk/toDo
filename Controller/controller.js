@@ -4,26 +4,36 @@ import {
   logLocal,
   clearLocal,
   loadLocal,
+  removeLocal,
 } from "../Model/dataManager.js";
+
+const page = document.querySelector("body");
 
 //importerer data-related funktioner
 
 export function createTaskWindow(debug) {
+  //hvis taskWindow eksisterer, fjernes den
+  const taskWindow = document.getElementById("taskWindow");
+  if (taskWindow) {
+    taskWindow.remove();
+  }
+
   // skaber UI til at oprette nye opgaver
-  const page = document.querySelector("body");
-  const taskWindow = document.createElement("div");
-  taskWindow.id = "taskWindow";
-  taskWindow.innerHTML = `
+
+  const createTaskWindow = document.createElement("div");
+
+  createTaskWindow.id = "taskCreatorWindow";
+  createTaskWindow.innerHTML = `
     <input type='text' id='taskTitle' placeholder='Titel' value='Ny opgave'></input>
     <input type='text' id='taskDescription' placeholder='Beskrivelse'></input>
     <input type='text' id='taskIcon' placeholder='Ikon' value='file'></input>
 
     <button id='addTask'>Tilføj opgave</button>
-    `; //HTML indvolden for UI elementet taskWindow
-  page.appendChild(taskWindow); //taskWindow tilføjes
+    `; //HTML indvolden for UI elementet createTaskWindow
+  page.appendChild(createTaskWindow); //createTaskWindow tilføjes
 
   if (debug === true) {
-    debugOptions(taskWindow); // debug-funktioner kaldes
+    debugOptions(createTaskWindow); // debug-funktioner kaldes
   }
 
   const taskButton = document.getElementById("addTask");
@@ -92,5 +102,32 @@ function printDebugLinks(tasks) {
   tasks.forEach((task) => {
     debugLinks.innerHTML += `<li><a href='Task/task.html?id=${task.id}'>${task.title}</a></li>`;
   });
-  taskWindow.appendChild(debugLinks);
+  taskCreatorWindow.appendChild(debugLinks);
+}
+
+export function viewTask(task) {
+  //hvis createTaskWindow eksisterer, fjernes den
+  const createTaskWindow = document.getElementById("taskCreatorWindow");
+
+  if (createTaskWindow) {
+    createTaskWindow.remove();
+  }
+  
+  // skaber UI til at vise opgaven
+  const TaskWindow = document.createElement("div");
+  TaskWindow.id = "taskWindow";
+  TaskWindow.innerHTML = `
+    <h1>${task.title}</h1>
+    <p>${task.description}</p>
+    <button id='taskDone'>Done</button>
+    `;
+
+  page.appendChild(TaskWindow);
+
+  const taskDoneBtn = document.getElementById("taskDone");
+
+  taskDoneBtn.addEventListener("click", () => {
+    task.isDone = true;
+    console.log("Task marked as done:", task);
+  });
 }

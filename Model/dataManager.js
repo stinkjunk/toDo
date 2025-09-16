@@ -21,3 +21,7 @@ export function clearLocal() {
     localStorage.clear();
     //sletter localStorage data
 }
+
+export function removeLocal(id) {
+    console.log("Removing task with id:", id);
+}
