@@ -7,37 +7,59 @@ import {
   removeLocal,
 } from "../Model/dataManager.js";
 
-const page = document.querySelector("body");
+const taskList = document.getElementById("taskList");
 
 //importerer data-related funktioner
 
+let icon = "📄";
+
 export function createTaskWindow(debug) {
-  //hvis taskWindow eksisterer, fjernes den
-  const taskWindow = document.getElementById("taskWindow");
-  if (taskWindow) {
-    taskWindow.remove();
+  let createTaskWindow = document.getElementById("taskCreatorWindow");
+  if (createTaskWindow) {
+    createTaskWindow.remove();
+  } else {
+    createTaskWindow = document.createElement("div");
   }
 
   // skaber UI til at oprette nye opgaver
 
-  const createTaskWindow = document.createElement("div");
-
   createTaskWindow.id = "taskCreatorWindow";
+  createTaskWindow.classList.add("taskUI", "taskCard");
   createTaskWindow.innerHTML = `
-    <input type='text' id='taskTitle' placeholder='Titel' value='Ny opgave'></input>
-    <input type='text' id='taskDescription' placeholder='Beskrivelse'></input>
-    <input type='text' id='taskIcon' placeholder='Ikon' value='file'></input>
-
-    <button id='addTask'>Tilføj opgave</button>
+    <div class="cardHeader">
+    <button id='iconPickerBtn' class="iconElement">${icon}</button>
+      <input type='text' id='taskTitle' class="taskTitle" placeholder='Titel' value='Ny opgave'></input>
+    </div>
+    <div class="cardContent">
+      <input type='text' id='taskDescription' placeholder='Beskrivelse'></input>
+      <!-- <input type='text' id='taskIcon' placeholder='Ikon' value='file'></input> -->
+    </div>
+    <div class="cardFooter">
+    <button id='addTask'>Tilføj opgave</button><button id='cancelCreation'>Annuller</button>
+    </div>
     `; //HTML indvolden for UI elementet createTaskWindow
-  page.appendChild(createTaskWindow); //createTaskWindow tilføjes
+  taskList.prepend(createTaskWindow); //createTaskWindow tilføjes, prepend for at vises først
 
   if (debug === true) {
     debugOptions(createTaskWindow); // debug-funktioner kaldes
   }
 
   const taskButton = document.getElementById("addTask");
+  const cancelCreationBtn = document.getElementById("cancelCreation");
+  const iconPickerBtn = document.getElementById("iconPickerBtn");
+
   taskButton.addEventListener("click", taskCreator);
+  cancelCreationBtn.addEventListener("click", cancelCardCreation);
+  iconPickerBtn.addEventListener("click", iconPicker);
+}
+
+function cancelCardCreation() {
+  let createTaskWindow = document.getElementById("taskCreatorWindow");
+  createTaskWindow.remove();
+}
+
+function iconPicker() {
+  console.log("Icon picker clicked");
 }
 
 loadLocal(); // loader opgaver fra localStorage ind i hukommelsen
@@ -48,13 +70,16 @@ function taskCreator() {
 
   const taskTitle = document.getElementById("taskTitle");
   const taskDescription = document.getElementById("taskDescription");
-  const taskIcon = document.getElementById("taskIcon");
+  const taskIcon = icon;
+  console.log("taskIcon:", taskIcon);
   //refererer til input felterne i task window
 
   currentTask.title = taskTitle.value;
   currentTask.description = taskDescription.value;
-  currentTask.icon = taskIcon.value;
+  currentTask.icon = taskIcon;
   //læser værdierne fra førnævnte input felter og gemmer dem i objektet currentTask
+
+  console.log("currentTask.icon:", currentTask.icon);
 
   console.log(currentTask);
   addTask(currentTask);
@@ -66,22 +91,21 @@ function debugOptions(slot) {
     <button id='debugClearLocal'>Clear local storage</button>
     <button id='debugStoreLocal'>Store local storage</button>
     <button id='debugLogLocal'>Log local storage</button>
-    <button id='printDebugLinks'>Print debug links</button>
     `;
 
   const debugClearLocal = document.getElementById("debugClearLocal");
   const debugStoreLocal = document.getElementById("debugStoreLocal");
   const debugLogLocal = document.getElementById("debugLogLocal");
-  const printDebugLinksBtn = document.getElementById("printDebugLinks");
 
   debugClearLocal.addEventListener("click", () => {
     tasks.length = 0; //glemmer i-hukommelse data
     clearLocal(); //glemmer data i localStorage
     console.log("Glemt opgaver i localStorage og fra nuværende instans");
+    initialize();
+    console.log("Genindlæst");
   });
   // debugStoreLocal.addEventListener("click", () => storeLocal(tasks));
   debugLogLocal.addEventListener("click", () => logLocal());
-  printDebugLinksBtn.addEventListener("click", () => printDebugLinks(tasks));
 }
 
 function addTask(task) {
@@ -93,41 +117,43 @@ function addTask(task) {
   console.log("Added task:", task);
   console.log("Tasks:", tasks);
   storeLocal(tasks);
+  initialize();
 }
 
-function printDebugLinks(tasks) {
-  const debugLinks = document.createElement("ul");
-  debugLinks.id = "debugLinks";
-  debugLinks.innerHTML = "";
-  tasks.forEach((task) => {
-    debugLinks.innerHTML += `<li><a href='Task/task.html?id=${task.id}'>${task.title}</a></li>`;
-  });
-  taskCreatorWindow.appendChild(debugLinks);
-}
-
-export function viewTask(task) {
-  //hvis createTaskWindow eksisterer, fjernes den
-  const createTaskWindow = document.getElementById("taskCreatorWindow");
-
-  if (createTaskWindow) {
-    createTaskWindow.remove();
-  }
-  
-  // skaber UI til at vise opgaven
-  const TaskWindow = document.createElement("div");
-  TaskWindow.id = "taskWindow";
-  TaskWindow.innerHTML = `
-    <h1>${task.title}</h1>
-    <p>${task.description}</p>
-    <button id='taskDone'>Done</button>
-    `;
-
-  page.appendChild(TaskWindow);
-
-  const taskDoneBtn = document.getElementById("taskDone");
-
-  taskDoneBtn.addEventListener("click", () => {
-    task.isDone = true;
-    console.log("Task marked as done:", task);
-  });
+export function initialize() {
+  taskList.innerHTML = "";
+  archiveList.innerHTML = "";
+  tasks
+    .slice() //skaber en kopi af tasks, så vi ikke ændrer originalen
+    .reverse() //sorterer i omvendt rækkefølge, så vi får de nyeste først
+    .forEach((task) => {
+      console.log("task:", task);
+      //skab card for hver task:
+      const card = document.createElement("div");
+      card.classList.add("taskCard");
+      card.innerHTML = `
+        <div class="cardHeader">
+    <button class='iconElement' class="iconElement">${task.icon}</button>
+      <input id='titleID${task.id}'type='text' class="taskTitle" placeholder='${
+        task.title
+      }' value='${task.title}'></input>
+    </div>
+    <div class="cardContent">
+      <input id='descID${task.id}' type='text' class='taskDesc' placeholder='${
+        task.description
+      }' value='${task.description}'></input>
+    </div>
+     <div class="cardFooter">
+       <button class="taskDoneBtn">${
+         task.isDone ? "Færdiggjort ✅" : "Færddiggjort ❌"
+       }</button>
+      </div>
+  `;
+      card.id = task.id;
+      if (task.isDone) {
+        card.classList.add("done");
+        archiveList.appendChild(card);
+      }
+      taskList.appendChild(card);
+    });
 }

@@ -1,3 +1,151 @@
 html {
-    font-family: sans-serif
+  font-family: "DM Sans", sans-serif;
+}
+
+html,
+body {
+  overflow-x: hidden;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--bgcol);
+  color: var(--txtcol);
+}
+
+header {
+  background-color: var(--bgcol2);
+}
+
+header .top {
+  display: flex;
+  justify-content: space-between;
+  padding: 2ch;
+}
+
+.top > * {
+  margin: 0;
+}
+
+button#createNew {
+  border-radius: 10000px;
+  font-size: 1rem;
+  scale: 90%;
+}
+
+button {
+  border-style: none;
+  background-color: var(--accnt1);
+  color: var(--bgcol);
+  cursor: pointer;
+}
+
+#brouchure {
+  display: grid;
+  width: 200vw;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr;
+  transition: transform 0.5s ease-in-out;
+}
+
+#brouchure.archivedPage {
+  transform: translateX(-100%);
+}
+
+.taskList {
+  display: flex;
+  flex-direction: column;
+  gap: 1ch;
+  padding: 1ch;
+}
+
+/* cards UI: */
+
+.taskCard {
+  max-height: 35vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bgcol2);
+  border-radius: 2ch;
+  padding: 1ch;
+  transition: all 0.5s ease-in-out;
+}
+
+.cardFooter,
+.cardHeader {
+  display: flex;
+  align-items: center;
+  padding: 1ch;
+  gap: 1ch;
+}
+
+.cardFooter button {
+  padding: 0.5ch;
+  padding-left: 1ch;
+  padding-right: 1ch;
+  border-radius: 10000px;
+}
+
+.taskTitle {
+  font-size: 1.4rem;
+  font-family: "DM Sans", sans-serif;
+  font-weight: 400;
+}
+
+.taskDesc,
+.taskTitle {
+      background-color: var(--bgcol);
+
+  padding-left: 1ch;
+  padding-right: 1ch;
+  border: none;
+  border-radius: 10000px;
+}
+
+.taskDesc {
+    width: 100%;
+}
+
+.cardContent {
+  flex-grow: 1;
+}
+
+.cardHeader button {
+  margin-left: auto;
+  /* background-color: transparent; */
+}
+
+#taskDoneBtn {
+  margin-left: auto;
+}
+
+.iconElement {
+  height: 100%;
+  aspect-ratio: 1/1;
+}
+
+.iconElement {
+  background-color: transparent;
+  font-size: 1.2rem;
+  background-color: var(--bgcol);
+  padding: 0.5ch;
+  border-radius: 10000px;
+}
+
+.taskCard input {
+  width: 100%;
+}
+@media (min-width: 600px) {
+  .taskList {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1ch;
+  }
+}
+
+@media (min-width: 800px) {
+  .taskList {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
 }
