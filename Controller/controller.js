@@ -31,7 +31,7 @@ export function createTaskWindow(debug) {
       <input type='text' id='taskTitle' class="taskTitle" placeholder='Titel' value='Ny opgave'></input>
     </div>
     <div class="cardContent">
-      <input type='text' id='taskDescription' placeholder='Beskrivelse'></input>
+      <input type='text' id='taskDescription' class="taskDesc" placeholder='Beskrivelse'></input>
       <!-- <input type='text' id='taskIcon' placeholder='Ikon' value='file'></input> -->
     </div>
     <div class="cardFooter">
@@ -124,8 +124,8 @@ export function initialize() {
   taskList.innerHTML = "";
   archiveList.innerHTML = "";
   tasks
-    .slice() //skaber en kopi af tasks, så vi ikke ændrer originalen
-    .reverse() //sorterer i omvendt rækkefølge, så vi får de nyeste først
+    // .slice() //skaber en kopi af tasks, så vi ikke ændrer originalen
+    // .reverse() //sorterer i omvendt rækkefølge, så vi får de nyeste først
     .forEach((task) => {
       console.log("task:", task);
       //skab card for hver task:
@@ -133,7 +133,9 @@ export function initialize() {
       card.classList.add("taskCard");
       card.innerHTML = `
         <div class="cardHeader">
-    <button class='iconElement' class="iconElement">${task.icon}</button>
+    <button class='iconElement' class="iconElement" id='iconID${task.id}'>${
+        task.icon
+      }</button>
       <input id='titleID${task.id}'type='text' class="taskTitle" placeholder='${
         task.title
       }' value='${task.title}'></input>
@@ -144,9 +146,10 @@ export function initialize() {
       }' value='${task.description}'></input>
     </div>
      <div class="cardFooter">
-       <button class="taskDoneBtn">${
-         task.isDone ? "Færdiggjort ✅" : "Færddiggjort ❌"
-       }</button>
+       <button class="taskDoneBtn" id='doneID${task.id}'>${
+        task.isDone ? "❌" : "Færdig"
+      }</button>
+       <button class="deleteTaskBtn" id="deleteID${task.id}">🗑️</button>
       </div>
   `;
       card.id = task.id;
@@ -154,6 +157,44 @@ export function initialize() {
         card.classList.add("done");
         archiveList.appendChild(card);
       }
-      taskList.appendChild(card);
+      taskList.prepend(card);
+
+      const taskTitle = document.getElementById(`titleID${task.id}`);
+      const taskDesc = document.getElementById(`descID${task.id}`);
+      const taskIcon = document.getElementById(`iconID${task.id}`);
+      const taskDoneBtn = document.getElementById(`doneID${task.id}`);
+      const deleteTaskBtn = document.getElementById(`deleteID${task.id}`);
+
+      taskTitle.addEventListener("input", (event) => {
+        task.title = event.target.value;
+        console.log("taskTitle input: ", task.title, " (ID: ", task.id, ")");
+      });
+
+      taskDesc.addEventListener("input", (event) => {
+        task.description = event.target.value;
+        console.log(
+          "taskDesc input: ",
+          task.description,
+          " (ID: ",
+          task.id,
+          ")"
+        );
+      });
+
+      taskIcon.addEventListener("click", () => {
+        console.log("Icon picker clicked (ID: ", task.id, ")");
+      });
+
+      taskDoneBtn.addEventListener("click", () => {
+        task.isDone = !task.isDone;
+        console.log("Task marked as done: ", task, " (ID: ", task.id, ")");
+      });
+
+      deleteTaskBtn.addEventListener("click", () => {
+        console.log("Delete task clicked (ID: ", task.id, ")");
+        //...
+      });
+
+      //TODO: Opdater tasks[] i localStorage hver gang info er opdateret
     });
 }
