@@ -13,7 +13,6 @@ const archiveList = document.getElementById("archiveList");
 
 //importerer data-related funktioner
 
-
 loadLocal(); // loader opgaver fra localStorage ind i hukommelsen
 
 export function addTask() {
@@ -41,6 +40,13 @@ export function addList() {
   list.id = self.crypto.randomUUID(); //generer et tilfældigt id
   list.isDone = false;
   list.isNew = true;
+  list.tasks = [];
+  list.tasks.push({
+    ware: "Varer",
+    bought: 0,
+    need: 10,
+  });
+  console.log("Tasks: ", list.tasks);
   tasks.push(list);
   console.log("Added list:", list);
   storeLocal(tasks);
@@ -104,20 +110,92 @@ export function initialize() {
         }, 500);
       });
     } else {
-      console.log("Type er en liste");
+      console.log(task.id, "er en liste");
+
+      const entryHTML = task.tasks
+        .map(
+          (entry, i) => `
+          <div class="shoppingListItem">
+            <button class="numBtn" id="minusBtn${task.id}_${i}">–</button>
+            <p id="wareCountID${task.id}_${i}" class="wareCount">${entry.bought}</p>
+            <button class="numBtn" id="plusBtn${task.id}_${i}">+</button>
+            <input id="wareNameID${task.id}_${i}" type="text" class="wareTitle" 
+            value="${entry.ware}">
+            <p> købt ud af </p>
+            <input id="needID${task.id}_${i}" type="number" class="needCount" 
+            value="${entry.need}">
+            <button class="deleteEntryBtn" id="deleteEntry${task.id}_${i}">–</button>
+          </div>
+          `
+        )
+        .join("");
+
       card.innerHTML = `
        <div class="cardHeader">
-      <button class='iconElement' id='iconID${task.id}'>${task.icon}</button>
-      <input id='titleID${task.id}' type='text' class="taskTitle" placeholder='${task.title}' value='${task.title}'>
-    </div>
-    <div class="cardContent">
-    </div>
-    <div class="cardFooter">
-      <button class="deleteTaskBtn" id="deleteID${task.id}">🗑️</button>
-
-
-
+         <button class='iconElement' id='iconID${task.id}'>${task.icon}</button>
+         <input id='titleID${task.id}' type='text' class="taskTitle" placeholder='${task.title}' value='${task.title}'>
+         </div>
+           <div class="cardContent">
+           <div class="shoppingList">
+           ${entryHTML}
+            <button class = "addEntry" id="addEntry${task.id}">Tilføj ny vare</button>
+           </div>
+         </div>
+       <div class="cardFooter">
+         <button class="deleteTaskBtn" id="deleteID${task.id}">🗑️</button>
+       </div>
       `;
+
+      task.tasks.forEach((entry, i) => {
+        console.log(entry);
+        const minusBtn = card.querySelector(`#minusBtn${task.id}_${i}`);
+        const plusBtn = card.querySelector(`#plusBtn${task.id}_${i}`);
+        const wareCount = card.querySelector(`#wareCountID${task.id}_${i}`);
+        const wareName = card.querySelector(`#wareNameID${task.id}_${i}`);
+        const needCount = card.querySelector(`#needID${task.id}_${i}`);
+        const deleteEntryBtn = card.querySelector(
+          `#deleteEntry${task.id}_${i}`
+        );
+
+        minusBtn.addEventListener("click", () => {
+          entry.bought--;
+          wareCount.innerHTML = entry.bought;
+          updateLocal(task.id, task.tasks, "tasks");
+        });
+
+        plusBtn.addEventListener("click", () => {
+          entry.bought++;
+          wareCount.innerHTML = entry.bought;
+          updateLocal(task.id, task.tasks, "tasks");
+        });
+
+        deleteEntryBtn.addEventListener("click", () => {
+          console.log("Delete entry clicked (ID: ", task.id, ")");
+          confirmDeletion(task.id, task.title);
+        });
+
+        wareName.addEventListener("input", (event) => {
+          entry.ware = event.target.value;
+          updateLocal(task.id, task.tasks, "tasks");
+        });
+
+        needCount.addEventListener("input", (event) => {
+          entry.need = event.target.value;
+          updateLocal(task.id, task.tasks, "tasks");
+        });
+      });
+
+      const addEntryBtn = card.querySelector(`#addEntry${task.id}`);
+      addEntryBtn.addEventListener("click", () => {
+        task.tasks.push({
+          ware: "Varer",
+          bought: 0,
+          need: 10,
+        });
+        console.log("Added entry:", task.tasks);
+        storeLocal(tasks);
+        initialize();
+      });
     }
 
     card.id = task.id;

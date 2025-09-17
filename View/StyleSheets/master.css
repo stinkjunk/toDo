@@ -2,6 +2,15 @@ html {
   font-family: "DM Sans", sans-serif;
 }
 
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
 html,
 body {
   overflow-x: hidden;
@@ -101,7 +110,7 @@ button {
 /* cards UI: */
 
 .taskCard {
-  max-height: 35vh;
+  max-height: auto;
   display: flex;
   flex-direction: column;
   background-color: var(--bgcol2);
@@ -192,7 +201,8 @@ button {
 }
 
 #windowCont {
-  position: absolute;
+  z-index: 10;
+  position: fixed;
   top: 0;
   left: 0;
   transition: all 0.5s ease-in-out;
@@ -202,14 +212,83 @@ button {
   align-items: center;
   width: 100%;
   height: 100%;
-  z-index: -10;
+  pointer-events: none;
+}
+.shoppingList {
+  display: flex;
+  flex-direction: column;
+  gap: 1ch;
+}
+
+.shoppingListItem {
+  display: flex;
+  justify-content: center;
+
+  align-items: center;
+  background-color: var(--bgcol);
+}
+
+.shoppingList button.addEntry,
+.shoppingListItem {
+  border-radius: 2ch;
+}
+
+.shoppingList button.addEntry {
+  padding: 1ch;
+  font-size: 1rem;
+}
+
+.shoppingListItem input,
+.shoppingListItem p {
+  font-family: "DM Sans", sans-serif;
+  font-size: 1rem;
+  font-weight: 400;
+}
+
+.shoppingListItem input {
+  background-color: var(--bgcol2);
+  border-style: none;
+
+  padding-left: 0.5ch;
+  padding-right: 1ch;
+  border-radius: 2ch;
+}
+
+.shoppingListItem input[type="number"] {
+  width: 2.5ch;
+}
+
+.shoppingListItem input[type="text"] {
+  width: 5ch;
+}
+
+.shoppingListItem button {
+  background-color: transparent;
+  border-style: none;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--accnt1);
+}
+
+.deleteEntryBtn {
+  aspect-ratio: 1/1;
+  background-color: var(--accnt1) !important;
+  color: var(--bgcol) !important;
+  border-style: none;
+  font-size: 2ch;
+  height: 3ch;
+  aspect-ratio: 1/1;
+  font-weight: 800;
+  border-radius: 10000px;
+  scale: 65%;
+  margin-left: 2ch;
 }
 
 /*Vindue-UI*/
 #windowCont.active {
-  z-index: 10;
   backdrop-filter: blur(2px);
   -webkit-backdrop-filter: blur(2px); /* Safari */
+  pointer-events: auto;
 }
 
 .window {
@@ -253,11 +332,15 @@ button {
 }
 
 @keyframes zoomIn {
-  from {
+  0% {
     transform: scale(0);
   }
-  to {
+  25% {
+    opacity: 0%;
+  }
+  100% {
     transform: scale(1);
+    opacity: 100%;
   }
 }
 
