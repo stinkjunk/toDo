@@ -9,18 +9,19 @@ import {
 } from "../Model/dataManager.js";
 
 const taskList = document.getElementById("taskList");
+const archiveList = document.getElementById("archiveList");
 
 //importerer data-related funktioner
 
-let icon = "📄";
 
 loadLocal(); // loader opgaver fra localStorage ind i hukommelsen
 
 export function addTask() {
   const task = {}; //objekt som holder opgavens data
+  task.type = "task";
   task.title = "Ny opgave";
   task.description = "";
-  task.icon = icon;
+  task.icon = "📝";
   task.id = self.crypto.randomUUID(); //generer et tilfældigt id
   task.isDone = false;
   task.isNew = true;
@@ -32,111 +33,132 @@ export function addTask() {
   initialize();
 }
 
+export function addList() {
+  const list = {}; //objekt som holder opgavens data
+  list.type = "list";
+  list.title = "Ny indkøbsliste";
+  list.icon = "🛒";
+  list.id = self.crypto.randomUUID(); //generer et tilfældigt id
+  list.isDone = false;
+  list.isNew = true;
+  tasks.push(list);
+  console.log("Added list:", list);
+  storeLocal(tasks);
+  initialize();
+}
+
 export function initialize() {
   taskList.innerHTML = "";
   archiveList.innerHTML = "";
-  tasks
-    // .slice() //skaber en kopi af tasks, så vi ikke ændrer originalen
-    // .reverse() //sorterer i omvendt rækkefølge, så vi får de nyeste først
-    .forEach((task) => {
+
+  tasks.forEach((task) => {
+    const card = document.createElement("div");
+    card.classList.add("taskCard");
+    if (task.type === "task") {
       console.log("task:", task);
       //skab card for hver task:
-      const card = document.createElement("div");
-      card.classList.add("taskCard");
+
       card.innerHTML = `
-        <div class="cardHeader">
-    <button class='iconElement' class="iconElement" id='iconID${task.id}'>${
-        task.icon
-      }</button>
-      <input id='titleID${task.id}'type='text' class="taskTitle" placeholder='${
+    <div class="cardHeader">
+      <button class='iconElement' id='iconID${task.id}'>${task.icon}</button>
+      <input id='titleID${
+        task.id
+      }' type='text' class="taskTitle" placeholder='${task.title}' value='${
         task.title
-      }' value='${task.title}'></input>
+      }'>
     </div>
     <div class="cardContent">
       <textarea id='descID${
         task.id
-      }' class='taskDesc' placeholder='Tilføj en beskrivelse' value=${
+      }' class='taskDesc' placeholder='Tilføj en beskrivelse'>${
         task.description
-      }>${task.description}</textarea>
+      }</textarea>
     </div>
-     <div class="cardFooter">
-       <button class="taskDoneBtn" id='doneID${task.id}'>${
+    <div class="cardFooter">
+      <button class="taskDoneBtn" id='doneID${task.id}'>${
         task.isDone ? "Fortryd færdiggørelse" : "Færdig"
       }</button>
-       <button class="deleteTaskBtn" id="deleteID${task.id}">🗑️</button>
-      </div>
+      <button class="deleteTaskBtn" id="deleteID${task.id}">🗑️</button>
+    </div>
   `;
-      card.id = task.id;
-      if (task.isDone) {
-        card.classList.add("done");
-        archiveList.appendChild(card);
-      } else {
-        taskList.prepend(card);
-      }
-
-      if (task.isNew === true) {
-        card.classList.add("removing"); // start in shrunken state
-        card.offsetHeight; // force reflow
-        card.classList.remove("removing"); // triggers transition to normal size
-        task.isNew = false;
-        updateLocal(task.id, task.isNew, "isNew");
-      }
-
-      const taskTitle = document.getElementById(`titleID${task.id}`);
-      const taskDesc = document.getElementById(`descID${task.id}`);
-      const taskIcon = document.getElementById(`iconID${task.id}`);
-      const taskDoneBtn = document.getElementById(`doneID${task.id}`);
-      const deleteTaskBtn = document.getElementById(`deleteID${task.id}`);
-
-      taskTitle.addEventListener("input", (event) => {
-        task.title = event.target.value;
-        // console.log("taskTitle input: ", task.title, " (ID: ", task.id, ")");
-        updateLocal(task.id, task.title, "title");
-      });
+      //task-type specifikke consts
+      const taskDesc = card.querySelector(`#descID${task.id}`);
+      const taskDoneBtn = card.querySelector(`#doneID${task.id}`);
+      //query i selve card, da disse ikke eksisterer i DOM endu
 
       taskDesc.addEventListener("input", (event) => {
         task.description = event.target.value;
-        // console.log(
-        //   "taskDesc input: ",
-        //   task.description,
-        //   " (ID: ",
-        //   task.id,
-        //   ")"
-        // );
         updateLocal(task.id, task.description, "description");
-      });
-
-      taskIcon.addEventListener("click", () => {
-        console.log("Icon picker clicked (ID: ", task.id, ")");
       });
 
       taskDoneBtn.addEventListener("click", () => {
         const taskCard = document.getElementById(`${task.id}`);
         task.isDone = !task.isDone;
-        console.log(
-          "Task marked as done: ",
-          task,
-          " (isDone: ",
-          task.isDone,
-          ")"
-        );
+        console.log("Task marked as done:", task);
         updateLocal(task.id, task.isDone, "isDone");
+
         taskCard.classList.add("removing");
         setTimeout(() => {
-          console.log("Task card shrunken...");
           taskCard.remove();
-          console.log("Task removed from DOM");
           initialize();
         }, 500);
       });
+    } else {
+      console.log("Type er en liste");
+      card.innerHTML = `
+       <div class="cardHeader">
+      <button class='iconElement' id='iconID${task.id}'>${task.icon}</button>
+      <input id='titleID${task.id}' type='text' class="taskTitle" placeholder='${task.title}' value='${task.title}'>
+    </div>
+    <div class="cardContent">
+    </div>
+    <div class="cardFooter">
+      <button class="deleteTaskBtn" id="deleteID${task.id}">🗑️</button>
 
-      deleteTaskBtn.addEventListener("click", () => {
-        console.log("Delete task clicked (ID: ", task.id, ")");
-        confirmDeletion(task.id, task.title);
-      });
 
-      //TODO: Opdater tasks[] i localStorage hver gang info er opdateret
+
+      `;
+    }
+
+    card.id = task.id;
+    if (task.isDone) {
+      card.classList.add("done");
+      archiveList.prepend(card);
+    } else {
+      taskList.prepend(card);
+    }
+
+    if (task.isNew === true) {
+      card.classList.add("removing"); // start in shrunken state
+      card.offsetHeight; // force reflow
+      card.classList.remove("removing"); // triggers transition to normal size
+      task.isNew = false;
+      updateLocal(task.id, task.isNew, "isNew");
+    }
+
+    //universelle consts for alle typer card
+
+    const taskTitle = document.getElementById(`titleID${task.id}`);
+    const taskIcon = document.getElementById(`iconID${task.id}`);
+    const deleteTaskBtn = document.getElementById(`deleteID${task.id}`);
+
+    taskTitle.addEventListener("input", (event) => {
+      task.title = event.target.value;
+      // console.log("taskTitle input: ", task.title, " (ID: ", task.id, ")");
+      updateLocal(task.id, task.title, "title");
     });
+
+    taskIcon.addEventListener("click", () => {
+      console.log("Icon picker clicked (ID: ", task.id, ")");
+    });
+
+    deleteTaskBtn.addEventListener("click", () => {
+      console.log("Delete task clicked (ID: ", task.id, ")");
+      confirmDeletion(task.id, task.title);
+    });
+
+    //TODO: Opdater tasks[] i localStorage hver gang info er opdateret
+  });
 }
 
 const windowCont = document.getElementById("windowCont");

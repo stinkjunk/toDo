@@ -19,20 +19,20 @@
     <header>
       <div class="top">
         <h1>To-Do</h1>
-        <button id="createNew">+</button>
+        <div class="headerTopButtons">
+        <button class="createNew" id="createNewTask">📝</button>
+        <button class="createNew" id="createNewList">🛒</button>
+        </div>
       </div>
       <div class="options">
         <button id="activeBtn" class="active">Aktive Opgaver</button>
         <button id="archiveBtn">Arkiv</button>
-
       </div>
     </header>
     <main>
-        <div id="brouchure">
-      <div class="taskList" id="taskList">
-      </div>
-      <div class="taskList" id="archiveList"></div>
-
+      <div id="brouchure">
+        <div class="taskList" id="taskList"></div>
+        <div class="taskList" id="archiveList"></div>
       </div>
     </main>
     <script src="index.js" type="module"></script>

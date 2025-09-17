@@ -55,13 +55,18 @@ header .top {
   padding: 2ch;
 }
 
+.headerTopButtons {
+  display: flex;
+  gap: 1ch;
+}
+
 .top > * {
   margin: 0;
 }
 
-button#createNew {
+button.createNew {
   border-radius: 10000px;
-  font-size: 2rem;
+  font-size: 1.3rem;
   width: 3rem;
   height: 3rem;
   scale: 90%;
