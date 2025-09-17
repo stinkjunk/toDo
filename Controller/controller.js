@@ -6,6 +6,7 @@ import {
   clearLocal,
   loadLocal,
   removeLocal,
+  printPlaceholderData,
 } from "../Model/dataManager.js";
 
 const taskList = document.getElementById("taskList");
@@ -45,6 +46,7 @@ export function addList() {
     ware: "Varer",
     bought: 0,
     need: 10,
+    complete: false,
   });
   console.log("Tasks: ", list.tasks);
   tasks.push(list);
@@ -90,12 +92,27 @@ export function initialize() {
       //task-type specifikke consts
       const taskDesc = card.querySelector(`#descID${task.id}`);
       const taskDoneBtn = card.querySelector(`#doneID${task.id}`);
+
       //query i selve card, da disse ikke eksisterer i DOM endu
+
+      requestAnimationFrame(() => {
+        taskDesc.style.height = "auto";
+        taskDesc.style.height = taskDesc.scrollHeight + "px";
+        //venter med at opdaterer indtil efter første render
+        //forstår vitterligt ikke hvorfor denne funktionalitet
+        //ikke bare er en CSS-property; BBLEERHHH!
+        //(ser også snappy ud............)
+      });
 
       taskDesc.addEventListener("input", (event) => {
         task.description = event.target.value;
         updateLocal(task.id, task.description, "description");
+        taskDesc.style.height = "auto";
+        taskDesc.style.height = taskDesc.scrollHeight + "px";
       });
+
+      taskDesc.style.height = "auto";
+      taskDesc.style.height = taskDesc.scrollHeight + "px";
 
       taskDoneBtn.addEventListener("click", () => {
         const taskCard = document.getElementById(`${task.id}`);
@@ -115,16 +132,20 @@ export function initialize() {
       const entryHTML = task.tasks
         .map(
           (entry, i) => `
-          <div class="shoppingListItem">
+          <div class="shoppingListItem ${entry.complete ? "complete" : ""}">
             <button class="numBtn" id="minusBtn${task.id}_${i}">–</button>
-            <p id="wareCountID${task.id}_${i}" class="wareCount">${entry.bought}</p>
+            <p id="wareCountID${task.id}_${i}" class="wareCount">${
+            entry.bought
+          }</p>
             <button class="numBtn" id="plusBtn${task.id}_${i}">+</button>
             <input id="wareNameID${task.id}_${i}" type="text" class="wareTitle" 
             value="${entry.ware}">
-            <p> købt ud af </p>
+            <p>købt/</p>
             <input id="needID${task.id}_${i}" type="number" class="needCount" 
             value="${entry.need}">
-            <button class="deleteEntryBtn" id="deleteEntry${task.id}_${i}">–</button>
+            <button class="deleteEntryBtn" id="deleteEntry${
+              task.id
+            }_${i}">–</button>
           </div>
           `
         )
@@ -137,8 +158,8 @@ export function initialize() {
          </div>
            <div class="cardContent">
            <div class="shoppingList">
+              <button class = "addEntry" id="addEntry${task.id}">Tilføj ny vare</button>
            ${entryHTML}
-            <button class = "addEntry" id="addEntry${task.id}">Tilføj ny vare</button>
            </div>
          </div>
        <div class="cardFooter">
@@ -147,7 +168,9 @@ export function initialize() {
       `;
 
       task.tasks.forEach((entry, i) => {
-        console.log(entry);
+        // i = indeks fordi det er det andet argument
+        //i forEach funktionen
+        const item = card.querySelectorAll(".shoppingListItem")[i];
         const minusBtn = card.querySelector(`#minusBtn${task.id}_${i}`);
         const plusBtn = card.querySelector(`#plusBtn${task.id}_${i}`);
         const wareCount = card.querySelector(`#wareCountID${task.id}_${i}`);
@@ -158,31 +181,77 @@ export function initialize() {
         );
 
         minusBtn.addEventListener("click", () => {
-          entry.bought--;
-          wareCount.innerHTML = entry.bought;
-          updateLocal(task.id, task.tasks, "tasks");
+          if (entry.bought > 0) {
+            if (entry.complete) {
+              entry.complete = false;
+              item.classList.remove("complete");
+            }
+            if (task.isDone) {
+              task.isDone = false;
+              card.classList.remove("done");
+              card.classList.add("removing");
+              setTimeout(() => {
+                card.remove();
+                initialize();
+              }, 500);
+            }
+            entry.bought--;
+            wareCount.innerHTML = entry.bought;
+            updateLocal(task.id, task.tasks, "tasks");
+          }
         });
 
         plusBtn.addEventListener("click", () => {
           entry.bought++;
+          if (entry.bought >= entry.need) {
+            entry.bought = entry.need;
+            entry.complete = true;
+            item.classList.add("complete");
+          }
           wareCount.innerHTML = entry.bought;
+
+          if (task.tasks.every((entry) => entry.complete)) {
+            task.isDone = true;
+
+            card.classList.add("removing");
+            setTimeout(() => {
+              card.remove();
+              initialize();
+            }, 500);
+          }
+
           updateLocal(task.id, task.tasks, "tasks");
         });
 
         deleteEntryBtn.addEventListener("click", () => {
-          console.log("Delete entry clicked (ID: ", task.id, ")");
-          confirmDeletion(task.id, task.title);
+          if (task.tasks.length === 1) {
+            const message = `
+             <h3 style="text-align: center;">Slet liste?</h3>
+             <p>Det ser ud til at du er ved at slette den eneste vare i listen.</p>
+             <p>Hvis du sletter denne vare vil listen også blive slettet.</p>
+             <p>Er du sikker?</p>
+             `;
+            confirmDeletion(task.id, message);
+            return;
+          }
+          task.tasks.splice(i, 1);
+          item.classList.add("removing");
+          setTimeout(() => item.remove(), 500);
+          storeLocal(tasks);
         });
 
-        wareName.addEventListener("input", (event) => {
-          entry.ware = event.target.value;
+        wareName.addEventListener("input", (entryInner) => {
+          entry.ware = entryInner.target.value;
           updateLocal(task.id, task.tasks, "tasks");
         });
 
-        needCount.addEventListener("input", (event) => {
-          entry.need = event.target.value;
+        needCount.addEventListener("input", (entryInner) => {
+          entry.need = Number(entryInner.target.value);
           updateLocal(task.id, task.tasks, "tasks");
         });
+        //entryInner shorthand brugt for læsbarhed (forvirrende med to 'entry's)
+        //NOTE TO SELF:
+        //både entry og entryInner er shorthands defineret i arrow-funktioner
       });
 
       const addEntryBtn = card.querySelector(`#addEntry${task.id}`);
@@ -191,6 +260,7 @@ export function initialize() {
           ware: "Varer",
           bought: 0,
           need: 10,
+          complete: false,
         });
         console.log("Added entry:", task.tasks);
         storeLocal(tasks);
@@ -231,30 +301,37 @@ export function initialize() {
     });
 
     deleteTaskBtn.addEventListener("click", () => {
-      console.log("Delete task clicked (ID: ", task.id, ")");
-      confirmDeletion(task.id, task.title);
-    });
+      const message = `
+      <h3 style="text-align: center;">Slet ${
+        task.type === "task" ? "opgaven" : "listen"
+      }?</h3>
+      <p>Er du sikker på at du vil slette ${
+        task.type === "task" ? "opgaven" : "listen"
+      } "<i>${task.title}"?</i></p>
+      <p>Denne handling kan ikke fortrydes.</p>
 
-    //TODO: Opdater tasks[] i localStorage hver gang info er opdateret
+      `;
+
+      console.log("Delete task clicked (ID: ", task.id, ")");
+
+      confirmDeletion(task.id, message);
+    });
   });
 }
 
 const windowCont = document.getElementById("windowCont");
 
-function confirmDeletion(id, title) {
+function confirmDeletion(id, message) {
   windowCont.innerHTML = ""; //cleanup, for en sikkerheds skyld
   windowCont.classList.add("active");
   const confirmWindow = document.createElement("div");
   confirmWindow.classList = "window zoomIn";
-  confirmWindow.innerHTML = `
-    <h3 style="text-align: center;">Slet opgave?</h3>
-    <p>Er du sikker på at du vil slette opgaven "<i>${title}"?</i></p>
-    <p>Denne handling kan ikke fortrydes.</p>
-    <div class="buttons">
-      <button Id="confirmBtnID${id}">Ja</button>
-      <button Id="cancelBtnID${id}">Nej</button>
-    </div>
-    `;
+  console.log("Message i confirmDeletion:", message);
+  confirmWindow.innerHTML = `${message}
+        <div class="buttons">
+       <button Id="confirmBtnID${id}">Ja</button>
+       <button Id="cancelBtnID${id}">Nej</button>
+      </div>`;
 
   //...
   windowCont.appendChild(confirmWindow);
@@ -315,14 +392,14 @@ export function debugOptions(slot) {
   debugWindow.id = "debugWindow";
   debugWindow.innerHTML = `
     <button id='debugClearLocal'>Clear local storage</button>
-    <button id='debugStoreLocal'>Store local storage</button>
     <button id='debugLogLocal'>Log local storage</button>
+    <button id='debugPrintPlaceholderData'>Print placeholder data</button>
     `;
   slot.prepend(debugWindow);
 
   const debugClearLocal = document.getElementById("debugClearLocal");
-  const debugStoreLocal = document.getElementById("debugStoreLocal");
   const debugLogLocal = document.getElementById("debugLogLocal");
+  const debugPrintPlaceholderData = document.getElementById("debugPrintPlaceholderData");
 
   debugClearLocal.addEventListener("click", () => {
     tasks.length = 0; //glemmer i-hukommelse data
@@ -333,4 +410,8 @@ export function debugOptions(slot) {
   });
   // debugStoreLocal.addEventListener("click", () => storeLocal(tasks));
   debugLogLocal.addEventListener("click", () => logLocal());
+debugPrintPlaceholderData.addEventListener("click", async () => {
+  await printPlaceholderData("../Model/placeHolderData.json");
+  initialize();
+});
 }

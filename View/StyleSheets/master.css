@@ -8,6 +8,7 @@ input[type="number"]::-webkit-outer-spin-button {
   margin: 0;
 }
 input[type="number"] {
+  appearance: textfield;
   -moz-appearance: textfield;
 }
 
@@ -110,20 +111,22 @@ button {
 /* cards UI: */
 
 .taskCard {
-  max-height: auto;
+  max-height: 100vh;
+
   display: flex;
   flex-direction: column;
   background-color: var(--bgcol2);
   border-radius: 2ch;
   padding: 1ch;
-  transition: all 0.5s ease-in-out;
-  overflow: hidden;
+  transition: all 0.5s linear;
+  overflow: auto;
 }
 
 .taskCard.removing {
   max-height: 0vh;
   padding-bottom: 0ch;
   padding-top: 0ch;
+  overflow: hidden;
 }
 
 .cardFooter,
@@ -164,7 +167,6 @@ button {
 
 .taskDesc {
   padding: 0.5ch !important;
-  /*TODO: fix længden på input-feltet!*/
   border-radius: 1ch;
   width: 100%;
   box-sizing: border-box;
@@ -223,9 +225,36 @@ button {
 .shoppingListItem {
   display: flex;
   justify-content: center;
+  gap: 0.5ch;
 
   align-items: center;
   background-color: var(--bgcol);
+  transition: all 0.5s linear;
+  max-height: 10vh;
+}
+
+.shoppingListItem.removing {
+  max-height: 0vh;
+  padding-bottom: 0ch;
+  padding-top: 0ch;
+  overflow: hidden;
+}
+
+.shoppingListItem.complete {
+  background-color: rgb(39, 167, 39);
+  color: var(--bgcol);
+}
+.shoppingListItem.complete button {
+  color: var(--bgcol);
+}
+.shoppingListItem.complete input {
+  background-color: rgb(32, 143, 32);
+  color: var(--bgcol);
+}
+
+.shoppingListItem.complete .deleteEntryBtn {
+  background-color: rgb(32, 143, 32) !important;
+  color: var(--bgcol) !important;
 }
 
 .shoppingList button.addEntry,
@@ -255,11 +284,11 @@ button {
 }
 
 .shoppingListItem input[type="number"] {
-  width: 2.5ch;
+  min-width: 2.5ch;
 }
 
 .shoppingListItem input[type="text"] {
-  width: 5ch;
+  min-width: 5ch;
 }
 
 .shoppingListItem button {
@@ -351,6 +380,8 @@ button {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 1ch;
+    padding: 3ch;
+
   }
 }
 
@@ -365,3 +396,8 @@ button {
     grid-template-columns: 1fr 1fr 1fr 1fr;
   }
 }
+
+
+
+
+

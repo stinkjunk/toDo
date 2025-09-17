@@ -1,0 +1,159 @@
+[
+  {
+    "type": "task",
+    "title": "GPT",
+    "description": "Dette dataset er tydeligvis SÅ meget lavet af chatGPT 💀 -Magnus",
+    "icon": "🤖",
+    "id": "disclaimer",
+    "isDone": false,
+    "isNew": false
+  },
+  {
+    "type": "task",
+    "title": "Byg et lille terrarium",
+    "description": "Find en glasbeholder, småsten, jord og nogle små planter. Design dit eget miniature-økosystem og observer hvordan planterne trives over tid. Dette er en kreativ aktivitet, der kombinerer natur og design, og kan give ro i sindet.",
+    "icon": "📝",
+    "id": "t001",
+    "isDone": false,
+    "isNew": false
+  },
+  {
+    "type": "task",
+    "title": "Lav morgenmad uden opskrift",
+    "description": "Eksperimentér med hvad du har i køleskabet og prøv at lave en ny kombination af ingredienser. Måske en kreativ omelet eller smoothie. Formålet er at udfordre dig selv og have det sjovt med madlavning.",
+    "icon": "📝",
+    "id": "t002",
+    "isDone": false,
+    "isNew": false
+  },
+  {
+    "type": "list",
+    "title": "Indkøb til pizza",
+    "icon": "🛒",
+    "id": "l001",
+    "isDone": false,
+    "isNew": false,
+    "tasks": [
+      { "ware": "Pizzadej", "bought": 0, "need": 1, "complete": false },
+      { "ware": "Tomatsauce", "bought": 0, "need": 1, "complete": false },
+      { "ware": "Mozzarella", "bought": 0, "need": 2, "complete": false },
+      { "ware": "Peperoni", "bought": 0, "need": 1, "complete": false },
+      { "ware": "Basilikum", "bought": 0, "need": 1, "complete": false }
+    ]
+  },
+  {
+    "type": "task",
+    "title": "Prøv mindfulness-maling",
+    "description": "Tag dine farver, papir eller lærred og mal uden at tænke på resultatet. Fokusér kun på processen, farverne og bevægelserne. Dette er en afslappende måde at træne tilstedeværelse og kreativitet på.",
+    "icon": "📝",
+    "id": "t003",
+    "isDone": false,
+    "isNew": false
+  },
+  {
+    "type": "task",
+    "title": "Tag fotos i naturen",
+    "description": "Tag en gåtur og brug din telefon eller kamera til at tage billeder af interessante mønstre, planter, insekter eller landskaber. Prøv at se verden gennem et fotografisk perspektiv og observer detaljer, du normalt overser.",
+    "icon": "📝",
+    "id": "t004",
+    "isDone": false,
+    "isNew": false
+  },
+  {
+    "type": "list",
+    "title": "Snacks til picnic",
+    "icon": "🛒",
+    "id": "l002",
+    "isDone": false,
+    "isNew": false,
+    "tasks": [
+      { "ware": "Sandwich", "bought": 0, "need": 3, "complete": false },
+      { "ware": "Juice", "bought": 0, "need": 2, "complete": false },
+      { "ware": "Chips", "bought": 0, "need": 2, "complete": false },
+      { "ware": "Frugt", "bought": 0, "need": 5, "complete": false }
+    ]
+  },
+  {
+    "type": "task",
+    "title": "Skriv et kort digt",
+    "description": "Brug 10 minutter på at skrive et lille digt om dagens stemning eller noget, du observerede i naturen. Fokusér på følelser og ordvalg. Du behøver ikke bekymre dig om rim eller form, bare lad kreativiteten flyde.",
+    "icon": "📝",
+    "id": "t005",
+    "isDone": false,
+    "isNew": false
+  },
+  {
+    "type": "task",
+    "title": "Organiser digitale filer",
+    "description": "Brug tid på at rydde op i dine dokumenter, billeder og downloads-mappen. Opret mapper og navngiv filer konsekvent, så du altid hurtigt kan finde det, du leder efter. Dette giver mental ro og bedre workflow.",
+    "icon": "📝",
+    "id": "t006",
+    "isDone": false,
+    "isNew": false
+  },
+  {
+    "type": "list",
+    "title": "Indkøb til brunch",
+    "icon": "🛒",
+    "id": "l003",
+    "isDone": false,
+    "isNew": false,
+    "tasks": [
+      { "ware": "Æg", "bought": 0, "need": 6, "complete": false },
+      { "ware": "Bacon", "bought": 0, "need": 2, "complete": false },
+      { "ware": "Brød", "bought": 0, "need": 1, "complete": false },
+      { "ware": "Smør", "bought": 0, "need": 1, "complete": false },
+      { "ware": "Frugt", "bought": 0, "need": 3, "complete": false }
+    ]
+  },
+  {
+    "type": "task",
+    "title": "Planlæg næste ferie",
+    "description": "Brug tid på at undersøge destinationer, overnatningsmuligheder og aktiviteter. Lav en liste over steder, du gerne vil besøge, og noter hvad der er vigtigt for dig i en ferie. Dette skaber motivation og glæde at se frem til.",
+    "icon": "📝",
+    "id": "t007",
+    "isDone": false,
+    "isNew": false
+  },
+  {
+    "type": "task",
+    "title": "Lav et mini-projekt i Python",
+    "description": "Hvis du kan lide programmering, prøv at lave et lille Python-script, som fx organiserer dine filer eller henter data online. Udfordringen skal være kort, men lærerig og sjov.",
+    "icon": "📝",
+    "id": "t008",
+    "isDone": false,
+    "isNew": false
+  },
+  {
+    "type": "task",
+    "title": "Prøv en ny opskrift",
+    "description": "Vælg en opskrift, du aldrig har prøvet før, og følg den nøje. Notér hvad du kunne gøre anderledes næste gang. Dette hjælper dig med at udvikle madlavningsevner og gør hverdagens måltider mere spændende.",
+    "icon": "📝",
+    "id": "t009",
+    "isDone": false,
+    "isNew": false
+  },
+  {
+    "type": "list",
+    "title": "Indkøb til smoothie",
+    "icon": "🛒",
+    "id": "l004",
+    "isDone": false,
+    "isNew": false,
+    "tasks": [
+      { "ware": "Bananer", "bought": 0, "need": 3, "complete": false },
+      { "ware": "Bær", "bought": 0, "need": 2, "complete": false },
+      { "ware": "Yoghurt", "bought": 0, "need": 1, "complete": false },
+      { "ware": "Havregryn", "bought": 0, "need": 1, "complete": false }
+    ]
+  },
+  {
+    "type": "task",
+    "title": "Læs om et nyt emne",
+    "description": "Vælg et emne, du normalt ikke beskæftiger dig med, og læs en artikel eller et kort kapitel om det. Det kan være alt fra astronomi til filosofi. Dette udvider din horisont og stimulerer hjernen.",
+    "icon": "📝",
+    "id": "t010",
+    "isDone": false,
+    "isNew": false
+  }
+]

@@ -13,7 +13,7 @@ export function storeLocal(data) {
 }
 
 export function updateLocal(id, data, type) {
-//   console.log(`updateLocal(id=${id}, data=${data})`);
+  //   console.log(`updateLocal(id=${id}, data=${data})`);
   const index = tasks.findIndex((task) => task.id === id); //finder indeks for task med id
   if (index !== -1) {
     //hvis id findes i tasks-array
@@ -39,4 +39,18 @@ export function removeLocal(id) {
     tasks.splice(index, 1); //fjerner task fra tasks-array
     storeLocal(tasks);
   }
+}
+
+export async function printPlaceholderData(adress) {
+    clearLocal();
+
+  const response = await fetch(adress);
+  if (!response.ok) {
+    return;
+  }
+
+  const placeholderData = await response.json();
+
+  tasks.push(...placeholderData); 
+  storeLocal(tasks); 
 }

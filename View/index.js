@@ -14,7 +14,7 @@ const activeBtn = document.getElementById("activeBtn");
 const archiveBtn = document.getElementById("archiveBtn");
 
 //aktiver debug-funktioner
-const debug = true;
+const debug = false;
 //------------------------
 if (debug === true) {
 debugOptions(main);
