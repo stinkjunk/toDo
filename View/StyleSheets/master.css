@@ -19,14 +19,14 @@ header {
 }
 
 h1 {
-    font-size: 2.5rem;
+  font-size: 2.5rem;
 }
 
 .options {
-    display: flex;
-    gap: 2ch;
-    padding-left: 2ch;
-    padding-bottom: 1.5ch;
+  display: flex;
+  gap: 2ch;
+  padding-left: 2ch;
+  padding-bottom: 1.5ch;
 }
 
 #activeBtn,
@@ -133,7 +133,7 @@ button {
 
 .taskDesc,
 .taskTitle {
-      background-color: var(--bgcol);
+  background-color: var(--bgcol);
 
   padding-left: 1ch;
   padding-right: 1ch;
@@ -142,8 +142,11 @@ button {
 }
 
 .taskDesc {
-    width: 100%;
-    /*TODO: fix længden på input!*/
+  padding: 0.5ch !important;
+  /*TODO: fix længden på input-feltet!*/
+  border-radius: 1ch;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .cardContent {
@@ -186,5 +189,11 @@ button {
 @media (min-width: 800px) {
   .taskList {
     grid-template-columns: 1fr 1fr 1fr;
+  }
+}
+
+@media (min-width: 1000px) {
+  .taskList {
+    grid-template-columns: 1fr 1fr 1fr 1fr;
   }
 }

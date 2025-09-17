@@ -1,6 +1,7 @@
 import {
   tasks,
   storeLocal,
+  updateLocal,
   logLocal,
   clearLocal,
   loadLocal,
@@ -13,70 +14,70 @@ const taskList = document.getElementById("taskList");
 
 let icon = "📄";
 
-export function createTaskWindow(debug) {
-  let createTaskWindow = document.getElementById("taskCreatorWindow");
-  if (createTaskWindow) {
-    createTaskWindow.remove();
-  } else {
-    createTaskWindow = document.createElement("div");
-  }
+// export function createTaskWindow(debug) {
+//   let createTaskWindow = document.getElementById("taskCreatorWindow");
+//   if (createTaskWindow) {
+//     createTaskWindow.remove();
+//   } else {
+//     createTaskWindow = document.createElement("div");
+//   }
 
-  // skaber UI til at oprette nye opgaver
+//   // skaber UI til at oprette nye opgaver
 
-  createTaskWindow.id = "taskCreatorWindow";
-  createTaskWindow.classList.add("taskUI", "taskCard");
-  createTaskWindow.innerHTML = `
-    <div class="cardHeader">
-    <button id='iconPickerBtn' class="iconElement">${icon}</button>
-      <input type='text' id='taskTitle' class="taskTitle" placeholder='Titel' value='Ny opgave'></input>
-    </div>
-    <div class="cardContent">
-      <input type='text' id='taskDescription' class="taskDesc" placeholder='Beskrivelse'></input>
-      <!-- <input type='text' id='taskIcon' placeholder='Ikon' value='file'></input> -->
-    </div>
-    <div class="cardFooter">
-    <button id='addTask'>Tilføj opgave</button><button id='cancelCreation'>Annuller</button>
-    </div>
-    `; //HTML indvolden for UI elementet createTaskWindow
-  taskList.prepend(createTaskWindow); //createTaskWindow tilføjes, prepend for at vises først
+//   createTaskWindow.id = "taskCreatorWindow";
+//   createTaskWindow.classList.add("taskUI", "taskCard");
+//   createTaskWindow.innerHTML = `
+//     <div class="cardHeader">
+//     <button id='iconPickerBtn' class="iconElement">${icon}</button>
+//       <input type='text' id='taskTitle' class="taskTitle" placeholder='Titel' value='Ny opgave'></input>
+//     </div>
+//     <div class="cardContent">
+//       <textarea id='taskDescription' class="taskDesc" placeholder='Tilføj en beskrivelse'></textarea>
+//       <!-- <input type='text' id='taskIcon' placeholder='Ikon' value='file'></input> -->
+//     </div>
+//     <div class="cardFooter">
+//     <button id='addTask'>Tilføj opgave</button><button id='cancelCreation'>Annuller</button>
+//     </div>
+//     `; //HTML indvolden for UI elementet createTaskWindow
+//   taskList.prepend(createTaskWindow); //createTaskWindow tilføjes, prepend for at vises først
 
-  if (debug === true) {
-    debugOptions(createTaskWindow); // debug-funktioner kaldes
-  }
+//   if (debug === true) {
+//     debugOptions(createTaskWindow); // debug-funktioner kaldes
+//   }
 
-  const taskButton = document.getElementById("addTask");
-  const cancelCreationBtn = document.getElementById("cancelCreation");
-  const iconPickerBtn = document.getElementById("iconPickerBtn");
+//   const taskButton = document.getElementById("addTask");
+//   const cancelCreationBtn = document.getElementById("cancelCreation");
+//   const iconPickerBtn = document.getElementById("iconPickerBtn");
 
-  taskButton.addEventListener("click", taskCreator);
-  cancelCreationBtn.addEventListener("click", cancelCardCreation);
-  iconPickerBtn.addEventListener("click", iconPicker);
-}
+//   taskButton.addEventListener("click", taskCreator);
+//   cancelCreationBtn.addEventListener("click", cancelCardCreation);
+//   iconPickerBtn.addEventListener("click", iconPicker);
+// }
 
-function cancelCardCreation() {
-  let createTaskWindow = document.getElementById("taskCreatorWindow");
-  createTaskWindow.remove();
-}
+// function cancelCardCreation() {
+//   let createTaskWindow = document.getElementById("taskCreatorWindow");
+//   createTaskWindow.remove();
+// }
 
-function iconPicker() {
-  console.log("Icon picker clicked");
-}
+// function iconPicker() {
+//   console.log("Icon picker clicked");
+// }
 
 loadLocal(); // loader opgaver fra localStorage ind i hukommelsen
 
-function taskCreator() {
+export function taskCreator() {
   let currentTask = {};
   //variabel som holder opgavens data (datatype: object)
 
-  const taskTitle = document.getElementById("taskTitle");
-  const taskDescription = document.getElementById("taskDescription");
-  const taskIcon = icon;
-  console.log("taskIcon:", taskIcon);
+  // const taskTitle = document.getElementById("taskTitle");
+  // const taskDescription = document.getElementById("taskDescription");
+  // const taskIcon = icon;
+  // console.log("taskIcon:", taskIcon);
   //refererer til input felterne i task window
 
-  currentTask.title = taskTitle.value;
-  currentTask.description = taskDescription.value;
-  currentTask.icon = taskIcon;
+  currentTask.title = "Ny opgave";
+  currentTask.description = "";
+  currentTask.icon = icon;
   //læser værdierne fra førnævnte input felter og gemmer dem i objektet currentTask
 
   console.log("currentTask.icon:", currentTask.icon);
@@ -86,12 +87,15 @@ function taskCreator() {
   //sender objektet currentTask til addTask-funktionen
 }
 
-function debugOptions(slot) {
-  slot.innerHTML += `
+export function debugOptions(slot) {
+  const debugWindow = document.createElement("div");
+  debugWindow.id = "debugWindow";
+  debugWindow.innerHTML = `
     <button id='debugClearLocal'>Clear local storage</button>
     <button id='debugStoreLocal'>Store local storage</button>
     <button id='debugLogLocal'>Log local storage</button>
     `;
+  slot.prepend(debugWindow);
 
   const debugClearLocal = document.getElementById("debugClearLocal");
   const debugStoreLocal = document.getElementById("debugStoreLocal");
@@ -141,9 +145,11 @@ export function initialize() {
       }' value='${task.title}'></input>
     </div>
     <div class="cardContent">
-      <input id='descID${task.id}' type='text' class='taskDesc' placeholder='${
+      <textarea id='descID${
+        task.id
+      }' class='taskDesc' placeholder='Tilføj en beskrivelse' value=${
         task.description
-      }' value='${task.description}'></input>
+      }>${task.description}</textarea>
     </div>
      <div class="cardFooter">
        <button class="taskDoneBtn" id='doneID${task.id}'>${
@@ -168,6 +174,7 @@ export function initialize() {
       taskTitle.addEventListener("input", (event) => {
         task.title = event.target.value;
         console.log("taskTitle input: ", task.title, " (ID: ", task.id, ")");
+        updateLocal(task.id, task.title, "title");
       });
 
       taskDesc.addEventListener("input", (event) => {
@@ -179,6 +186,7 @@ export function initialize() {
           task.id,
           ")"
         );
+        updateLocal(task.id, task.description, "description");
       });
 
       taskIcon.addEventListener("click", () => {

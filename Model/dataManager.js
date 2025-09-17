@@ -12,6 +12,15 @@ export function storeLocal(data) {
     //parser data til JSON og sætter det i localStorage
 }
 
+export function updateLocal(id, data, type) {
+    console.log(`updateLocal(id=${id}, data=${data})`);
+    const index = tasks.findIndex((task) => task.id === id); //finder indeks for task med id
+    if (index !== -1) { //hvis id findes i tasks-array
+        tasks[index][type] = data; //opdaterer kun for den relevante key
+        storeLocal(tasks);
+    }
+}
+
 export function logLocal() {
     console.log("Stored tasks:", JSON.parse(localStorage.getItem("tasks")));
     //logger tasks fra localStorage

@@ -1,14 +1,19 @@
-import { createTaskWindow, initialize } from "../Controller/controller.js";
+// import { createTaskWindow, initialize, taskCreator } from "../Controller/controller.js";
+import { initialize, taskCreator, debugOptions} from "../Controller/controller.js";
 
 const taskList = document.getElementById("taskList");
 const archiveList = document.getElementById("archiveList");
 const tasks = JSON.parse(localStorage.getItem("tasks"));
 const createNewBtn = document.getElementById("createNew");
 const brouchure = document.getElementById("brouchure");
+const main = document.querySelector("main");
 console.log("tasks:", tasks);
 
 const activeBtn = document.getElementById("activeBtn");
 const archiveBtn = document.getElementById("archiveBtn");
+
+const debug = true;
+
 
 archiveBtn.addEventListener("click", () => {
   brouchure.classList = "archivedPage";
@@ -28,6 +33,12 @@ if (tasks !== null) {
   initialize();
 }
 
-createNewBtn.addEventListener("click", () => createTaskWindow(true));
+// createNewBtn.addEventListener("click", () => createTaskWindow(true));
+createNewBtn.addEventListener("click", taskCreator);
+
 
 // createTaskWindow(true);
+
+if (debug === true) {
+debugOptions(main);
+}
