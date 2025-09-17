@@ -1,5 +1,5 @@
 // import { createTaskWindow, initialize, taskCreator } from "../Controller/controller.js";
-import { initialize, taskCreator, debugOptions} from "../Controller/controller.js";
+import { initialize, addTask, debugOptions} from "../Controller/controller.js";
 
 const taskList = document.getElementById("taskList");
 const archiveList = document.getElementById("archiveList");
@@ -12,7 +12,9 @@ console.log("tasks:", tasks);
 const activeBtn = document.getElementById("activeBtn");
 const archiveBtn = document.getElementById("archiveBtn");
 
+//aktiver debug-funktioner
 const debug = true;
+//------------------------
 
 
 archiveBtn.addEventListener("click", () => {
@@ -34,7 +36,7 @@ if (tasks !== null) {
 }
 
 // createNewBtn.addEventListener("click", () => createTaskWindow(true));
-createNewBtn.addEventListener("click", taskCreator);
+createNewBtn.addEventListener("click", addTask);
 
 
 // createTaskWindow(true);

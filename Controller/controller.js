@@ -14,108 +14,16 @@ const taskList = document.getElementById("taskList");
 
 let icon = "📄";
 
-// export function createTaskWindow(debug) {
-//   let createTaskWindow = document.getElementById("taskCreatorWindow");
-//   if (createTaskWindow) {
-//     createTaskWindow.remove();
-//   } else {
-//     createTaskWindow = document.createElement("div");
-//   }
-
-//   // skaber UI til at oprette nye opgaver
-
-//   createTaskWindow.id = "taskCreatorWindow";
-//   createTaskWindow.classList.add("taskUI", "taskCard");
-//   createTaskWindow.innerHTML = `
-//     <div class="cardHeader">
-//     <button id='iconPickerBtn' class="iconElement">${icon}</button>
-//       <input type='text' id='taskTitle' class="taskTitle" placeholder='Titel' value='Ny opgave'></input>
-//     </div>
-//     <div class="cardContent">
-//       <textarea id='taskDescription' class="taskDesc" placeholder='Tilføj en beskrivelse'></textarea>
-//       <!-- <input type='text' id='taskIcon' placeholder='Ikon' value='file'></input> -->
-//     </div>
-//     <div class="cardFooter">
-//     <button id='addTask'>Tilføj opgave</button><button id='cancelCreation'>Annuller</button>
-//     </div>
-//     `; //HTML indvolden for UI elementet createTaskWindow
-//   taskList.prepend(createTaskWindow); //createTaskWindow tilføjes, prepend for at vises først
-
-//   if (debug === true) {
-//     debugOptions(createTaskWindow); // debug-funktioner kaldes
-//   }
-
-//   const taskButton = document.getElementById("addTask");
-//   const cancelCreationBtn = document.getElementById("cancelCreation");
-//   const iconPickerBtn = document.getElementById("iconPickerBtn");
-
-//   taskButton.addEventListener("click", taskCreator);
-//   cancelCreationBtn.addEventListener("click", cancelCardCreation);
-//   iconPickerBtn.addEventListener("click", iconPicker);
-// }
-
-// function cancelCardCreation() {
-//   let createTaskWindow = document.getElementById("taskCreatorWindow");
-//   createTaskWindow.remove();
-// }
-
-// function iconPicker() {
-//   console.log("Icon picker clicked");
-// }
-
 loadLocal(); // loader opgaver fra localStorage ind i hukommelsen
 
-export function taskCreator() {
-  let currentTask = {};
-  //variabel som holder opgavens data (datatype: object)
-
-  // const taskTitle = document.getElementById("taskTitle");
-  // const taskDescription = document.getElementById("taskDescription");
-  // const taskIcon = icon;
-  // console.log("taskIcon:", taskIcon);
-  //refererer til input felterne i task window
-
-  currentTask.title = "Ny opgave";
-  currentTask.description = "";
-  currentTask.icon = icon;
-  //læser værdierne fra førnævnte input felter og gemmer dem i objektet currentTask
-
-  console.log("currentTask.icon:", currentTask.icon);
-
-  console.log(currentTask);
-  addTask(currentTask);
-  //sender objektet currentTask til addTask-funktionen
-}
-
-export function debugOptions(slot) {
-  const debugWindow = document.createElement("div");
-  debugWindow.id = "debugWindow";
-  debugWindow.innerHTML = `
-    <button id='debugClearLocal'>Clear local storage</button>
-    <button id='debugStoreLocal'>Store local storage</button>
-    <button id='debugLogLocal'>Log local storage</button>
-    `;
-  slot.prepend(debugWindow);
-
-  const debugClearLocal = document.getElementById("debugClearLocal");
-  const debugStoreLocal = document.getElementById("debugStoreLocal");
-  const debugLogLocal = document.getElementById("debugLogLocal");
-
-  debugClearLocal.addEventListener("click", () => {
-    tasks.length = 0; //glemmer i-hukommelse data
-    clearLocal(); //glemmer data i localStorage
-    console.log("Glemt opgaver i localStorage og fra nuværende instans");
-    initialize();
-    console.log("Genindlæst");
-  });
-  // debugStoreLocal.addEventListener("click", () => storeLocal(tasks));
-  debugLogLocal.addEventListener("click", () => logLocal());
-}
-
-function addTask(task) {
+export function addTask() {
+  const task = {}; //objekt som holder opgavens data
+  task.title = "Ny opgave";
+  task.description = "";
+  task.icon = icon;
   task.id = self.crypto.randomUUID(); //generer et tilfældigt id
-  task.color = "hsl(215, 100%, 34%)"; //placeholder-farve
   task.isDone = false;
+  task.isNew = true;
 
   tasks.push(task); //tilføjer opgaven til tasks-array
   console.log("Added task:", task);
@@ -153,7 +61,7 @@ export function initialize() {
     </div>
      <div class="cardFooter">
        <button class="taskDoneBtn" id='doneID${task.id}'>${
-        task.isDone ? "❌" : "Færdig"
+        task.isDone ? "Fortryd færdiggørelse" : "Færdig"
       }</button>
        <button class="deleteTaskBtn" id="deleteID${task.id}">🗑️</button>
       </div>
@@ -162,8 +70,17 @@ export function initialize() {
       if (task.isDone) {
         card.classList.add("done");
         archiveList.appendChild(card);
+      } else {
+        taskList.prepend(card);
       }
-      taskList.prepend(card);
+
+      if (task.isNew === true) {
+        card.classList.add("removing"); // start in shrunken state
+        card.offsetHeight; // force reflow
+        card.classList.remove("removing"); // triggers transition to normal size
+        task.isNew = false;
+        updateLocal(task.id, task.isNew, "isNew");
+      }
 
       const taskTitle = document.getElementById(`titleID${task.id}`);
       const taskDesc = document.getElementById(`descID${task.id}`);
@@ -173,19 +90,19 @@ export function initialize() {
 
       taskTitle.addEventListener("input", (event) => {
         task.title = event.target.value;
-        console.log("taskTitle input: ", task.title, " (ID: ", task.id, ")");
+        // console.log("taskTitle input: ", task.title, " (ID: ", task.id, ")");
         updateLocal(task.id, task.title, "title");
       });
 
       taskDesc.addEventListener("input", (event) => {
         task.description = event.target.value;
-        console.log(
-          "taskDesc input: ",
-          task.description,
-          " (ID: ",
-          task.id,
-          ")"
-        );
+        // console.log(
+        //   "taskDesc input: ",
+        //   task.description,
+        //   " (ID: ",
+        //   task.id,
+        //   ")"
+        // );
         updateLocal(task.id, task.description, "description");
       });
 
@@ -194,15 +111,126 @@ export function initialize() {
       });
 
       taskDoneBtn.addEventListener("click", () => {
+        const taskCard = document.getElementById(`${task.id}`);
         task.isDone = !task.isDone;
-        console.log("Task marked as done: ", task, " (ID: ", task.id, ")");
+        console.log(
+          "Task marked as done: ",
+          task,
+          " (isDone: ",
+          task.isDone,
+          ")"
+        );
+        updateLocal(task.id, task.isDone, "isDone");
+        taskCard.classList.add("removing");
+        setTimeout(() => {
+          console.log("Task card shrunken...");
+          taskCard.remove();
+          console.log("Task removed from DOM");
+          initialize();
+        }, 500);
       });
 
       deleteTaskBtn.addEventListener("click", () => {
         console.log("Delete task clicked (ID: ", task.id, ")");
-        //...
+        confirmDeletion(task.id, task.title);
       });
 
       //TODO: Opdater tasks[] i localStorage hver gang info er opdateret
     });
+}
+
+const windowCont = document.getElementById("windowCont");
+
+function confirmDeletion(id, title) {
+  windowCont.innerHTML = ""; //cleanup, for en sikkerheds skyld
+  windowCont.classList.add("active");
+  const confirmWindow = document.createElement("div");
+  confirmWindow.classList = "window zoomIn";
+  confirmWindow.innerHTML = `
+    <h3 style="text-align: center;">Slet opgave?</h3>
+    <p>Er du sikker på at du vil slette opgaven "<i>${title}"?</i></p>
+    <p>Denne handling kan ikke fortrydes.</p>
+    <div class="buttons">
+      <button Id="confirmBtnID${id}">Ja</button>
+      <button Id="cancelBtnID${id}">Nej</button>
+    </div>
+    `;
+
+  //...
+  windowCont.appendChild(confirmWindow);
+  confirmWindow.addEventListener("animationend", () => {
+    console.log("ZoomIn on confirmWindow ended");
+
+    const confirmBtn = document.getElementById(`confirmBtnID${id}`);
+    console.log("confirmBtn:", confirmBtn);
+    const cancelBtn = document.getElementById(`cancelBtnID${id}`);
+    console.log("cancelBtn:", cancelBtn);
+
+    confirmBtn.addEventListener("click", () => {
+      handleChoice(true);
+    });
+
+    cancelBtn.addEventListener("click", () => {
+      handleChoice(false);
+    });
+
+    function handleChoice(remove) {
+      confirmBtn.disabled = true;
+      cancelBtn.disabled = true; //for at undgå kaos, når vinduet allerede lukkes
+
+      console.log("confirmBtn clicked");
+      windowCont.classList.remove("active");
+      confirmWindow.classList.remove("zoomIn");
+      confirmWindow.offsetHeight; //trigger reflow
+      confirmWindow.classList.add("zoomOut");
+      confirmWindow.addEventListener("animationend", () => {
+        console.log("ZoomOut on confirmWindow ended");
+        windowCont.innerHTML = "";
+        if (remove === true) {
+          console.log('Fjerer task med id: "', id, '"...');
+          removeSelf(id);
+        } else {
+          console.log('Annulerer fjernelse af task med id: "', id, '"...');
+        }
+      });
+    }
+  });
+}
+
+function removeSelf(id) {
+  console.log("Removing task with id:", id);
+  const task = document.getElementById(`${id}`);
+  task.classList.add("removing");
+  setTimeout(() => {
+    console.log("Task card shrunken...");
+    task.remove();
+    console.log("Task removed from DOM");
+    removeLocal(id);
+  }, 500);
+}
+
+//debug:
+export function debugOptions(slot) {
+  const debugWindow = document.createElement("div");
+  debugWindow.id = "debugWindow";
+  debugWindow.innerHTML = `
+    <button id='debugClearLocal'>Clear local storage</button>
+    <button id='debugStoreLocal'>Store local storage</button>
+    <button id='debugLogLocal'>Log local storage</button>
+    `;
+  slot.prepend(debugWindow);
+
+  const debugClearLocal = document.getElementById("debugClearLocal");
+  const debugStoreLocal = document.getElementById("debugStoreLocal");
+  const debugLogLocal = document.getElementById("debugLogLocal");
+
+  debugClearLocal.addEventListener("click", () => {
+    tasks.length = 0; //glemmer i-hukommelse data
+    clearLocal(); //glemmer data i localStorage
+    console.log("Glemt opgaver i localStorage og fra nuværende instans");
+    initialize();
+    console.log("Genindlæst");
+  });
+  // debugStoreLocal.addEventListener("click", () => storeLocal(tasks));
+  debugLogLocal.addEventListener("click", () => logLocal());
 }

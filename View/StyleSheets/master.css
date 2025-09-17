@@ -83,7 +83,7 @@ button {
 }
 
 #brouchure.archivedPage {
-  transform: translateX(-100%);
+  transform: translateX(-50%);
 }
 
 .taskList {
@@ -103,6 +103,13 @@ button {
   border-radius: 2ch;
   padding: 1ch;
   transition: all 0.5s ease-in-out;
+  overflow: hidden;
+}
+
+.taskCard.removing {
+  max-height: 0vh;
+  padding-bottom: 0ch;
+  padding-top: 0ch;
 }
 
 .cardFooter,
@@ -178,6 +185,79 @@ button {
 .taskCard input {
   width: 100%;
 }
+
+#windowCont {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transition: all 0.5s ease-in-out;
+  /*centrer vindue*/
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  z-index: -10;
+}
+
+/*Vindue-UI*/
+#windowCont.active {
+  z-index: 10;
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px); /* Safari */
+}
+
+.window {
+  box-shadow: 0 0 20px var(--shadowcol);
+  background-color: var(--bgcol2);
+  border-radius: 10px;
+  padding: 1ch;
+  width: 50%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1ch;
+}
+
+.window .buttons {
+  padding: 1ch;
+  display: flex;
+  height: 3ch;
+  justify-content: space-between;
+  gap: 2ch;
+}
+
+.window .buttons button {
+  flex-grow: 1;
+  border-radius: 10000px;
+  padding: 0.5ch;
+}
+
+.window > * {
+  margin: 0;
+  padding: 0;
+}
+
+/*Animationer*/
+.zoomIn {
+  animation: zoomIn 0.25s ease-in-out forwards;
+}
+
+.zoomOut {
+  animation: zoomIn 0.25s ease-in-out reverse forwards;
+}
+
+@keyframes zoomIn {
+  from {
+    transform: scale(0);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+/*Mediaqueries*/
+
 @media (min-width: 600px) {
   .taskList {
     display: grid;
