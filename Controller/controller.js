@@ -10,9 +10,14 @@ import {
   setPreferredTheme,
 } from "../Model/dataManager.js";
 
+const main = document.querySelector("main");
 const html = document.querySelector("html");
 const taskList = document.getElementById("taskList");
 const archiveList = document.getElementById("archiveList");
+const header = document.querySelector("header");
+const headerPush = document.getElementById("headerpush");
+
+headerPush.style.height = header.offsetHeight + 10 + "px";
 
 //importerer data-related funktioner
 
@@ -126,6 +131,7 @@ export function initialize() {
         setTimeout(() => {
           taskCard.remove();
           initialize();
+          updateScrollHeight();
         }, 500);
       });
     } else {
@@ -233,6 +239,7 @@ export function initialize() {
           setTimeout(() => item.remove(), 500);
           storeLocal(tasks);
           checkIfComplete();
+          updateScrollHeight();
         });
 
         wareName.addEventListener("input", (entryInner) => {
@@ -265,11 +272,13 @@ export function initialize() {
         function checkIfComplete() {
           if (task.tasks.every((entry) => entry.complete)) {
             task.isDone = true;
+            updateLocal(task.id, task.isDone, "isDone");
 
             card.classList.add("removing");
             setTimeout(() => {
               card.remove();
               initialize();
+              updateScrollHeight();
             }, 500);
           }
         }
@@ -313,6 +322,12 @@ export function initialize() {
     const taskTitle = document.getElementById(`titleID${task.id}`);
     const taskIcon = document.getElementById(`iconID${task.id}`);
     const deleteTaskBtn = document.getElementById(`deleteID${task.id}`);
+    const iconPickerBtn = document.getElementById(`iconID${task.id}`);
+
+    iconPickerBtn.addEventListener("click", () => {
+      console.log("Icon picker clicked (ID: ", task.id, ")");
+      iconPicker(task);
+    });
 
     taskTitle.addEventListener("input", (event) => {
       task.title = event.target.value;
@@ -341,6 +356,7 @@ export function initialize() {
       confirmDeletion(task.id, message);
     });
   });
+  updateScrollHeight();
 }
 
 const windowCont = document.getElementById("windowCont");
@@ -353,8 +369,8 @@ function confirmDeletion(id, message) {
   console.log("Message i confirmDeletion:", message);
   confirmWindow.innerHTML = `${message}
         <div class="buttons">
-       <button Id="confirmBtnID${id}">Ja</button>
-       <button Id="cancelBtnID${id}">Nej</button>
+       <button Id="confirmBtnID${id}" class="deletionBtns">Ja</button>
+       <button Id="cancelBtnID${id}" class="deletionBtns">Nej</button>
       </div>`;
 
   //...
@@ -407,7 +423,107 @@ function removeSelf(id) {
     task.remove();
     console.log("Task removed from DOM");
     removeLocal(id);
+    updateScrollHeight();
   }, 500);
+}
+
+function iconPicker(task) {
+  const icons = [
+    "📝",
+    "🛒",
+    "🤖",
+    "📚",
+    "🎨",
+    "🎵",
+    "🏃",
+    "🍳",
+    "🌱",
+    "🧘",
+    "📷",
+    "✍️",
+    "💡",
+    "📅",
+    "🔧",
+    "🧩",
+    "🍹",
+    "🍪",
+    "🛠️",
+    "🌞",
+    "🕹️",
+    "💻",
+    "📖",
+    "🌊",
+    "🚴",
+    "🎬",
+    "🗂️",
+    "🏡",
+    "✈️",
+    "🍎",
+    "🍊",
+    "🍌",
+    "🍉",
+    "🍓",
+    "🥑",
+    "🥕",
+    "🌽",
+    "🍕",
+    "🍔",
+    "🍟",
+    "🥪",
+    "🍰",
+    "🍩",
+    "🥗",
+    "🌅",
+    "🍗",
+    "🌲",
+    "📸",
+    "🥞",
+    "🐍",
+    "🥤",
+    "⚽",
+  ];
+
+  windowCont.innerHTML = ""; //cleanup, for en sikkerheds skyld
+  windowCont.classList.add("active");
+  const iconPickerWindow = document.createElement("div");
+  const iconTile = icons
+    .map(
+      (icon) =>
+        `<button class="iconElement" id="iconID${icon}">${icon}</button>`
+    )
+    .join("");
+  iconPickerWindow.innerHTML = `
+    <div class="iconPickerHeader">
+    <h3>Vælg et ikon</h3>
+    <button id="closeIconPicker">+</button>
+    </div>
+    <div class="iconContents">${iconTile}</div>
+    </div>`;
+  iconPickerWindow.classList = "window zoomIn";
+  iconPickerWindow.id = "iconPickerWindow";
+  windowCont.appendChild(iconPickerWindow);
+
+  const closeIconPicker = document.getElementById("closeIconPicker");
+  closeIconPicker.addEventListener("click", () => {
+    windowCont.classList.remove("active");
+    iconPickerWindow.classList.remove("zoomIn");
+    iconPickerWindow.offsetHeight; //trigger reflow
+    iconPickerWindow.classList.add("zoomOut");
+    iconPickerWindow.addEventListener("animationend", () => {
+      console.log("ZoomOut on confirmWindow ended");
+      windowCont.innerHTML = "";
+    });
+  });
+
+  icons.forEach((icon) => {
+    const iconBtn = document.getElementById(`iconID${icon}`);
+    iconBtn.addEventListener("click", () => {
+      task.icon = icon;
+      updateLocal(task.id, task.icon, "icon");
+      closeIconPicker.click();
+      initialize();
+    });
+  });
 }
 
 export function settings() {
@@ -475,8 +591,8 @@ export function settings() {
       ? "dark"
       : "light";
     console.log("Tema: Systemstandard");
-    settingsThemeDark.classList="";
-    settingsThemeLight.classList="";
+    settingsThemeDark.classList = "";
+    settingsThemeLight.classList = "";
     settingsThemeDef.classList.add("active");
   });
 
@@ -484,9 +600,9 @@ export function settings() {
     setPreferredTheme("light");
     html.classList = "light";
     console.log("Tema: Lys");
-    settingsThemeDark.classList="";
+    settingsThemeDark.classList = "";
     settingsThemeLight.classList.add("active");
-    settingsThemeDef.classList="";
+    settingsThemeDef.classList = "";
   });
 
   settingsThemeDark.addEventListener("click", () => {
@@ -494,8 +610,8 @@ export function settings() {
     html.classList = "dark";
     console.log("Tema: Mørk");
     settingsThemeDark.classList.add("active");
-    settingsThemeLight.classList="";
-    settingsThemeDef.classList="";
+    settingsThemeLight.classList = "";
+    settingsThemeDef.classList = "";
   });
 
   //debug:
@@ -510,5 +626,27 @@ export function settings() {
   settingsPrintPlaceholderData.addEventListener("click", async () => {
     await printPlaceholderData("../Model/placeHolderData.json");
     initialize();
+    settingsClose.click();
   });
 }
+
+//paster her undgår cirkulære imports
+const brouchure = document.getElementById("brouchure");
+const archivedPage = document.querySelector("#archiveList");
+const activePage = document.querySelector("#taskList");
+
+export function updateScrollHeight() {
+  const currentPage = brouchure.classList.contains("archivedPage")
+    ? archivedPage
+    : activePage;
+
+  // get the real rendered height in pixels
+  requestAnimationFrame(() => {
+    const height = currentPage.getBoundingClientRect().height;
+    main.style.height = height + "px";
+    console.log("Applied height:", height + "px");
+  });
+}
+
+window.addEventListener("load", updateScrollHeight);
+window.addEventListener("resize", updateScrollHeight);

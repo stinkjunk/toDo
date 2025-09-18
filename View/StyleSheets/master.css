@@ -20,12 +20,25 @@ input {
   color: var(--textcol);
 }
 
+main {
+
+  overflow: hidden;
+  transition: height 0.7s linear;
+}
+
+
 html.dark button#activeBtn.active,
 html.dark button#archiveBtn.active,
 html.dark button.taskDoneBtn,
 html.dark button.addEntry,
-html.dark button.numBtn {
-  color: var(--textcol);
+html.dark button.numBtn,
+html.dark button.deletionBtns,
+html.dark button.deleteEntryBtn {
+  color: var(--textcol) !important;
+}
+
+html.dark button.deleteEntryBtn {
+  background-color: var(--bgcol2) !important;
 }
 
 html,
@@ -47,6 +60,12 @@ body {
 
 header {
   background-color: var(--bgcol2);
+  width: 100%;;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 4;
+    box-shadow: 0 0 20px var(--shadowcol);
 }
 
 h1 {
@@ -133,6 +152,7 @@ button {
   flex-direction: column;
   gap: 1ch;
   padding: 1ch;
+  height:fit-content;
 }
 
 /* cards UI: */
@@ -181,6 +201,8 @@ button {
   font-family: "DM Sans", sans-serif;
   font-weight: 400;
 }
+
+
 
 .taskDesc,
 .taskTitle {
@@ -358,7 +380,7 @@ button {
   flex-direction: column;
   gap: 1ch;
 }
-
+.window#iconPickerWindow,
 .window#settingsWindow {
   width: 80%;
 }
@@ -389,11 +411,11 @@ button {
 }
 
 html.dark #settingsWindow > button.active {
-  border : 1px solid var(--txtcol);
+  border: 1px solid var(--txtcol);
 }
 
 #settingsWindow > button.active {
-  border : 1px solid var(--accnt1);
+  border: 1px solid var(--accnt1);
   background-color: var(--bgcol);
   color: var(--accnt1);
 }
@@ -401,6 +423,42 @@ html.dark #settingsWindow > button.active {
 html.dark #settingsWindow > button {
   color: var(--textcol);
 }
+
+.iconPickerHeader {
+  display: flex;
+  align-items: center;
+  position: relative;
+  height: 40px;
+}
+
+.iconPickerHeader > h3 {
+  margin: 0;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.iconPickerHeader > button {
+  margin-left: auto;
+  border-radius: 10000px;
+  font-size: 1.7rem;
+  padding: 0%;
+  height: 2rem;
+  aspect-ratio: 1 / 1;
+  transform: rotate(45deg);
+
+  scale: 120%;
+}
+
+html.dark .iconPickerHeader > button {
+  color: var(--textcol);
+}
+
+/* .iconContents {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.5ch;
+} */
 
 /*Animationer*/
 .zoomIn {

@@ -14,7 +14,7 @@ html.dark {
     --bgGreyed: #666666;
     --bgcol2: #161616;
     --txtcol: #eeeeee;
-    --shadowcol: #cecece3d;
+    --shadowcol: #cecece13;
     /* --accnt1: rgb(106, 200, 255); */
     --accnt1: var(--bgcol);
     --accnt2: rgb(190, 8, 8);
