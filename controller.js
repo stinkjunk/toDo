@@ -8,7 +8,7 @@ import {
   removeLocal,
   printPlaceholderData,
   setPreferredTheme,
-} from "../Model/dataManager.js";
+} from "./dataManager.js";
 
 
 
@@ -692,7 +692,7 @@ export function settings(button) {
   });
   settingsLogLocal.addEventListener("click", () => logLocal());
   settingsPrintPlaceholderData.addEventListener("click", async () => {
-    await printPlaceholderData("../Model/placeHolderData.json");
+    await printPlaceholderData("placeHolderData.json");
     initialize();
     settingsClose.click();
   });

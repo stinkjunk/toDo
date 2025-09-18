@@ -5,7 +5,7 @@ import {
   addList,
   settings,
   updateScrollHeight
-} from "../Controller/controller.js";
+} from "./controller.js";
 
 const taskList = document.getElementById("taskList");
 const archiveList = document.getElementById("archiveList");
