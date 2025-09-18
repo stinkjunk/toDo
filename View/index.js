@@ -57,6 +57,7 @@ if (tasks !== null) {
 // createNewTaskBtn.addEventListener("click", () => createTaskWindow(true));
 createNewTaskBtn.addEventListener("click", addTask);
 createNewListBtn.addEventListener("click", addList);
-settingsBtn.addEventListener("click", settings);
+settingsBtn.addEventListener("click", () => 
+  settings(settingsBtn));
 
 // createTaskWindow(true);

@@ -5,8 +5,7 @@ html {
     --txtcol: #070707;
     --shadowcol: #0707073d;
     --accnt1: rgb(0, 115, 223);
-    --accnt2: rgb(190, 8, 8);
-    --accnt3: rgb(7, 206, 0);
+
 }
 
 html.dark {
@@ -17,7 +16,8 @@ html.dark {
     --shadowcol: #cecece13;
     /* --accnt1: rgb(106, 200, 255); */
     --accnt1: var(--bgcol);
-    --accnt2: rgb(190, 8, 8);
-    --accnt3: rgb(7, 206, 0);
+
 }
+
+
 

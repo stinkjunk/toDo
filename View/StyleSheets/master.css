@@ -12,6 +12,10 @@ input[type="number"] {
   -moz-appearance: textfield;
 }
 
+* {
+  scrollbar-color: var(--bgcol2) var(--bgcol);
+}
+
 input {
   color: var(--textcol);
 }
@@ -21,20 +25,22 @@ input {
 }
 
 main {
-
   overflow: hidden;
   transition: height 0.7s linear;
 }
 
-
-html.dark button#activeBtn.active,
-html.dark button#archiveBtn.active,
 html.dark button.taskDoneBtn,
 html.dark button.addEntry,
 html.dark button.numBtn,
 html.dark button.deletionBtns,
 html.dark button.deleteEntryBtn {
   color: var(--textcol) !important;
+}
+
+html.dark button#activeBtn.active,
+html.dark button#archiveBtn.active {
+  background-color: rgb(39, 167, 39);
+  color: var(--bgcol);
 }
 
 html.dark button.deleteEntryBtn {
@@ -60,12 +66,25 @@ body {
 
 header {
   background-color: var(--bgcol2);
-  width: 100%;;
+  width: 100%;
   position: fixed;
   top: 0;
   left: 0;
   z-index: 4;
-    box-shadow: 0 0 20px var(--shadowcol);
+  box-shadow: 0 0 20px var(--shadowcol);
+}
+button#settings.hover {
+  transition: all 0.5s ease-in-out;
+  transform: rotate(0deg) scale(1);
+}
+button#settings.hover.active {
+  transform: rotate(360deg) scale(1);
+}
+button#settings.hover:hover {
+  transform: rotate(0deg) scale(1.1);
+}
+button#settings.hover:hover.active {
+  transform: rotate(360deg) scale(1.1);
 }
 
 h1 {
@@ -135,6 +154,15 @@ button {
   cursor: pointer;
 }
 
+button.hover {
+  transition: all 0.5s ease-in-out;
+  transform: scale(1);
+}
+
+button.hover:hover {
+  transform: scale(1.1);
+}
+
 #brouchure {
   display: grid;
   width: 200vw;
@@ -152,7 +180,7 @@ button {
   flex-direction: column;
   gap: 1ch;
   padding: 1ch;
-  height:fit-content;
+  height: fit-content;
 }
 
 /* cards UI: */
@@ -202,8 +230,6 @@ button {
   font-weight: 400;
 }
 
-
-
 .taskDesc,
 .taskTitle {
   background-color: var(--bgcol);
@@ -251,20 +277,7 @@ button {
   width: 100%;
 }
 
-#windowCont {
-  z-index: 10;
-  position: fixed;
-  top: 0;
-  left: 0;
-  transition: all 0.5s ease-in-out;
-  /*centrer vindue*/
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-}
+
 .shoppingList {
   display: flex;
   flex-direction: column;
@@ -363,6 +376,21 @@ button {
 }
 
 /*Vindue-UI*/
+#windowCont {
+  z-index: 10;
+  position: fixed;
+  top: 0;
+  left: 0;
+  transition: all 0.5s ease-in-out;
+  /*centrer vindue*/
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
 #windowCont.active {
   backdrop-filter: blur(2px);
   -webkit-backdrop-filter: blur(2px); /* Safari */
@@ -380,9 +408,14 @@ button {
   flex-direction: column;
   gap: 1ch;
 }
-.window#iconPickerWindow,
+
 .window#settingsWindow {
   width: 80%;
+}
+
+.window#iconPickerWindow {
+  width: auto;
+  max-width: 80%;
 }
 
 .window .buttons {
@@ -445,20 +478,26 @@ html.dark #settingsWindow > button {
   padding: 0%;
   height: 2rem;
   aspect-ratio: 1 / 1;
-  transform: rotate(45deg);
 
   scale: 120%;
+}
+
+.iconPickerHeader > button.hover {
+  transform: rotate(45deg) scale(1);
+}
+.iconPickerHeader > button.hover:hover {
+  transform: rotate(45deg) scale(1.1);
 }
 
 html.dark .iconPickerHeader > button {
   color: var(--textcol);
 }
 
-/* .iconContents {
+.iconContents {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 0.5ch;
-} */
+}
 
 /*Animationer*/
 .zoomIn {
@@ -483,8 +522,13 @@ html.dark .iconPickerHeader > button {
 }
 
 /*Mediaqueries*/
-
 @media (min-width: 600px) {
+  .taskList {
+    padding: 3ch;
+  }
+}
+
+@media (min-width: 800px) {
   .taskList {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -493,13 +537,13 @@ html.dark .iconPickerHeader > button {
   }
 }
 
-@media (min-width: 800px) {
+@media (min-width: 1300px) {
   .taskList {
     grid-template-columns: 1fr 1fr 1fr;
   }
 }
 
-@media (min-width: 1000px) {
+@media (min-width: 1900px) {
   .taskList {
     grid-template-columns: 1fr 1fr 1fr 1fr;
   }

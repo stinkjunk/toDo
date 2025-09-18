@@ -10,12 +10,32 @@ import {
   setPreferredTheme,
 } from "../Model/dataManager.js";
 
+
+
 const main = document.querySelector("main");
 const html = document.querySelector("html");
 const taskList = document.getElementById("taskList");
 const archiveList = document.getElementById("archiveList");
 const header = document.querySelector("header");
 const headerPush = document.getElementById("headerpush");
+const brouchure = document.getElementById("brouchure");
+const archivedPage = document.querySelector("#archiveList");
+const activePage = document.querySelector("#taskList");
+
+function disableScroll() {
+  html.style.overflow = "hidden";
+  document.body.style.overflow = "hidden";
+  // main.style.overflow = "hidden";
+  //   brouchure.classList.add("inactive");
+
+}
+
+function enableScroll() {
+  html.style.overflow = "";
+  document.body.style.overflow = "";
+  // main.style.overflow = "";
+  // brouchure.classList.remove("inactive");
+}
 
 headerPush.style.height = header.offsetHeight + 10 + "px";
 
@@ -63,6 +83,7 @@ export function addList() {
 }
 
 export function initialize() {
+  console.log("initialize ran");
   taskList.innerHTML = "";
   archiveList.innerHTML = "";
 
@@ -75,7 +96,9 @@ export function initialize() {
 
       card.innerHTML = `
     <div class="cardHeader">
-      <button class='iconElement' id='iconID${task.id}'>${task.icon}</button>
+      <button class='iconElement hover' id='iconID${task.id}'>${
+        task.icon
+      }</button>
       <input id='titleID${
         task.id
       }' type='text' class="taskTitle" placeholder='${task.title}' value='${
@@ -90,10 +113,10 @@ export function initialize() {
       }</textarea>
     </div>
     <div class="cardFooter">
-      <button class="taskDoneBtn" id='doneID${task.id}'>${
+      <button class="taskDoneBtn hover" id='doneID${task.id}'>${
         task.isDone ? "Fortryd færdiggørelse" : "Færdig"
       }</button>
-      <button class="deleteTaskBtn" id="deleteID${task.id}">🗑️</button>
+      <button class="deleteTaskBtn hover" id="deleteID${task.id}">🗑️</button>
     </div>
   `;
       //task-type specifikke consts
@@ -141,17 +164,17 @@ export function initialize() {
         .map(
           (entry, i) => `
           <div class="shoppingListItem ${entry.complete ? "complete" : ""}">
-            <button class="numBtn" id="minusBtn${task.id}_${i}">–</button>
+            <button class="numBtn hover" id="minusBtn${task.id}_${i}">–</button>
             <p id="wareCountID${task.id}_${i}" class="wareCount">${
             entry.bought
           }</p>
-            <button class="numBtn" id="plusBtn${task.id}_${i}">+</button>
+            <button class="numBtn hover" id="plusBtn${task.id}_${i}">+</button>
             <input id="wareNameID${task.id}_${i}" type="text" class="wareTitle" 
             value="${entry.ware}">
             <p>købt/</p>
             <input id="needID${task.id}_${i}" type="number" class="needCount" 
             value="${entry.need}">
-            <button class="deleteEntryBtn" id="deleteEntry${
+            <button class="deleteEntryBtn hover" id="deleteEntry${
               task.id
             }_${i}">–</button>
           </div>
@@ -174,6 +197,31 @@ export function initialize() {
          <button class="deleteTaskBtn" id="deleteID${task.id}">🗑️</button>
        </div>
       `;
+      function checkIfComplete(task, card) {
+        if (task.tasks.every((entry) => entry.complete)) {
+          task.isDone = true;
+          updateLocal(task.id, task.isDone, "isDone");
+
+          card.classList.add("removing");
+          setTimeout(() => {
+            card.remove();
+            initialize();
+            updateScrollHeight();
+          }, 500);
+        } else {
+          if (task.isDone === true) {
+            task.isDone = false;
+            updateLocal(task.id, task.isDone, "isDone");
+
+            card.classList.add("removing");
+            setTimeout(() => {
+              card.remove();
+              initialize();
+              updateScrollHeight();
+            }, 500);
+          }
+        }
+      }
 
       task.tasks.forEach((entry, i) => {
         // i = indeks fordi det er det andet argument
@@ -188,43 +236,79 @@ export function initialize() {
           `#deleteEntry${task.id}_${i}`
         );
 
-        minusBtn.addEventListener("click", () => {
-          if (entry.bought > 0) {
-            if (entry.complete) {
-              entry.complete = false;
-              item.classList.remove("complete");
-            }
-            if (task.isDone) {
-              task.isDone = false;
-              card.classList.remove("done");
-              card.classList.add("removing");
-              setTimeout(() => {
-                card.remove();
-                initialize();
-              }, 500);
-            }
-            entry.bought--;
-            wareCount.innerHTML = entry.bought;
-            updateLocal(task.id, task.tasks, "tasks");
-            checkIfComplete();
-          }
+        wareName.addEventListener("input", (entryInner) => {
+          entry.ware = entryInner.target.value;
+          wareName.innerHTML = entry.ware;
+          updateLocal(task.id, task.tasks, "tasks");
+          checkIfComplete(task, card);
+          // checkIfComplete();
         });
 
         plusBtn.addEventListener("click", () => {
+          console.log("Plus clicked");
           entry.bought++;
-          if (entry.bought >= entry.need) {
-            entry.bought = entry.need;
-            entry.complete = true;
-            item.classList.add("complete");
-          }
-          wareCount.innerHTML = entry.bought;
-
-          updateLocal(task.id, task.tasks, "tasks");
-          checkIfComplete();
+          compareValues();
+          checkIfComplete(task, card);
         });
 
+        minusBtn.addEventListener("click", () => {
+          console.log("Minus clicked");
+          entry.bought--;
+          compareValues();
+          checkIfComplete(task, card);
+        });
+
+        needCount.addEventListener("blur", (entryInner) => {
+          entry.need = Number(entryInner.target.value); //forstå dette
+
+          compareValues();
+          checkIfComplete(task, card);
+        });
+
+        function compareValues() {
+          if (entry.need <= 0) {
+            entry.need = 1;
+          }
+          if (entry.bought < 0) {
+            entry.bought = 0;
+          }
+
+          if (entry.need <= entry.bought) {
+            entry.bought = entry.need;
+            entry.complete = true;
+          } //hvis der er købt mere ind en der skal bruges,
+          //sæt den indkøbte værdi til den nødvendige
+
+          if (entry.bought < entry.need) {
+            entry.complete = false;
+          }
+
+          if (entry.need <= entry.bought) {
+            entry.bought = entry.need;
+            entry.complete = true;
+          }
+
+          if (entry.complete) {
+            item.classList.add("complete");
+          } else {
+            item.classList.remove("complete");
+          }
+
+          wareCount.innerHTML = entry.bought;
+          needCount.value = entry.need;
+
+          updateLocal(task.id, task.tasks, "tasks");
+          // checkIfComplete();
+        }
+
         deleteEntryBtn.addEventListener("click", () => {
-          if (task.tasks.length === 1) {
+          const remaining = item.parentElement.querySelectorAll(
+            ".shoppingListItem:not(.removing)"
+          ).length;
+          //tæller ikke varer som er ved at blive slettet
+          console.log("Mængde varer:", task.tasks.length);
+          console.log("Item:", item);
+          if (remaining === 1) {
             const message = `
              <h3 style="text-align: center;">Slet liste?</h3>
              <p>Det ser ud til at du er ved at slette den eneste vare i listen.</p>
@@ -234,54 +318,19 @@ export function initialize() {
             confirmDeletion(task.id, message);
             return;
           }
-          task.tasks.splice(i, 1);
           item.classList.add("removing");
-          setTimeout(() => item.remove(), 500);
-          storeLocal(tasks);
-          checkIfComplete();
-          updateScrollHeight();
+          // updateScrollHeight();
+
+          setTimeout(() => {
+            const entryIndex = task.tasks.indexOf(entry);
+            if (entryIndex > -1) task.tasks.splice(entryIndex, 1);
+            item.remove();
+            storeLocal(tasks);
+            checkIfComplete(task, card);
+            requestAnimationFrame(updateScrollHeight);
+          }, 500);
         });
 
-        wareName.addEventListener("input", (entryInner) => {
-          entry.ware = entryInner.target.value;
-          updateLocal(task.id, task.tasks, "tasks");
-          checkIfComplete();
-        });
-
-        needCount.addEventListener("input", (entryInner) => {
-          entry.need = Number(entryInner.target.value); //forstå dette
-          checkIfComplete();
-        });
-
-        needCount.addEventListener("blur", (entryInner) => {
-          if (entry.need <= 0) {
-            entry.need = 1;
-            entryInner.target.value = 1;
-          }
-          if (entry.bought >= entry.need) {
-            console.log("needCount");
-            entry.bought = entry.need;
-            wareCount.innerHTML = entry.bought;
-            entry.complete = true;
-            item.classList.add("complete");
-          }
-          updateLocal(task.id, task.tasks, "tasks");
-          checkIfComplete();
-        });
-
-        function checkIfComplete() {
-          if (task.tasks.every((entry) => entry.complete)) {
-            task.isDone = true;
-            updateLocal(task.id, task.isDone, "isDone");
-
-            card.classList.add("removing");
-            setTimeout(() => {
-              card.remove();
-              initialize();
-              updateScrollHeight();
-            }, 500);
-          }
-        }
         //entryInner shorthand brugt for læsbarhed (forvirrende med to 'entry's)
         //NOTE TO SELF:
         //både entry og entryInner er shorthands defineret i arrow-funktioner
@@ -298,6 +347,11 @@ export function initialize() {
         console.log("Added entry:", task.tasks);
         storeLocal(tasks);
         initialize();
+        if (!brouchure.classList.contains("archivedPage")) {
+          console.log("initializing...")
+          initialize();
+        }
+        checkIfComplete(task, card);
       });
     }
 
@@ -315,6 +369,9 @@ export function initialize() {
       card.classList.remove("removing"); // triggers transition to normal size
       task.isNew = false;
       updateLocal(task.id, task.isNew, "isNew");
+      card.addEventListener("transitionend", () => {
+        updateScrollHeight(); //scrollheight opdaterers når kortet er loadet helt ind
+      });
     }
 
     //universelle consts for alle typer card
@@ -357,6 +414,7 @@ export function initialize() {
     });
   });
   updateScrollHeight();
+  console.log("initialize ended");
 }
 
 const windowCont = document.getElementById("windowCont");
@@ -364,6 +422,8 @@ const windowCont = document.getElementById("windowCont");
 function confirmDeletion(id, message) {
   windowCont.innerHTML = ""; //cleanup, for en sikkerheds skyld
   windowCont.classList.add("active");
+  disableScroll();
+  document.body.style.overflow = "hidden";
   const confirmWindow = document.createElement("div");
   confirmWindow.classList = "window zoomIn";
   console.log("Message i confirmDeletion:", message);
@@ -397,6 +457,7 @@ function confirmDeletion(id, message) {
 
       console.log("confirmBtn clicked");
       windowCont.classList.remove("active");
+      enableScroll();
       confirmWindow.classList.remove("zoomIn");
       confirmWindow.offsetHeight; //trigger reflow
       confirmWindow.classList.add("zoomOut");
@@ -485,17 +546,18 @@ function iconPicker(task) {
 
   windowCont.innerHTML = ""; //cleanup, for en sikkerheds skyld
   windowCont.classList.add("active");
+  disableScroll();
   const iconPickerWindow = document.createElement("div");
   const iconTile = icons
     .map(
       (icon) =>
-        `<button class="iconElement" id="iconID${icon}">${icon}</button>`
+        `<button class="iconElement hover" id="iconID${icon}">${icon}</button>`
     )
     .join("");
   iconPickerWindow.innerHTML = `
     <div class="iconPickerHeader">
     <h3>Vælg et ikon</h3>
-    <button id="closeIconPicker">+</button>
+    <button id="closeIconPicker" class="hover">+</button>
     </div>
     <div class="iconContents">${iconTile}</div>
     </div>`;
@@ -506,6 +568,7 @@ function iconPicker(task) {
   const closeIconPicker = document.getElementById("closeIconPicker");
   closeIconPicker.addEventListener("click", () => {
     windowCont.classList.remove("active");
+    enableScroll();
     iconPickerWindow.classList.remove("zoomIn");
     iconPickerWindow.offsetHeight; //trigger reflow
     iconPickerWindow.classList.add("zoomOut");
@@ -526,9 +589,12 @@ function iconPicker(task) {
   });
 }
 
-export function settings() {
+export function settings(button) {
   windowCont.innerHTML = ""; //cleanup, for en sikkerheds skyld
   windowCont.classList.add("active");
+  disableScroll();
+  document.body.style.overflow = "hidden";
+  button.classList.add("active");
   const settingsWindow = document.createElement("div");
   settingsWindow.id = "settingsWindow";
   let currentTheme = localStorage.getItem("preferedTheme");
@@ -574,6 +640,8 @@ export function settings() {
 
   settingsClose.addEventListener("click", () => {
     windowCont.classList.remove("active");
+    enableScroll();
+    button.classList.remove("active");
     settingsWindow.classList.remove("zoomIn");
     settingsWindow.offsetHeight; //trigger reflow
     settingsWindow.classList.add("zoomOut");
@@ -631,20 +699,18 @@ export function settings() {
 }
 
 //paster her undgår cirkulære imports
-const brouchure = document.getElementById("brouchure");
-const archivedPage = document.querySelector("#archiveList");
-const activePage = document.querySelector("#taskList");
+
 
 export function updateScrollHeight() {
   const currentPage = brouchure.classList.contains("archivedPage")
     ? archivedPage
-    : activePage;
+    : activePage; //er den aktive side activePage eller archivedPage?
 
-  // get the real rendered height in pixels
   requestAnimationFrame(() => {
+    //vent til næste frame
     const height = currentPage.getBoundingClientRect().height;
     main.style.height = height + "px";
-    console.log("Applied height:", height + "px");
+    console.log("sat højde:", height + "px");
   });
 }
 
