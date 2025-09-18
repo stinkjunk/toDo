@@ -7,8 +7,10 @@ import {
   loadLocal,
   removeLocal,
   printPlaceholderData,
+  setPreferredTheme,
 } from "../Model/dataManager.js";
 
+const html = document.querySelector("html");
 const taskList = document.getElementById("taskList");
 const archiveList = document.getElementById("archiveList");
 
@@ -198,6 +200,7 @@ export function initialize() {
             entry.bought--;
             wareCount.innerHTML = entry.bought;
             updateLocal(task.id, task.tasks, "tasks");
+            checkIfComplete();
           }
         });
 
@@ -210,17 +213,8 @@ export function initialize() {
           }
           wareCount.innerHTML = entry.bought;
 
-          if (task.tasks.every((entry) => entry.complete)) {
-            task.isDone = true;
-
-            card.classList.add("removing");
-            setTimeout(() => {
-              card.remove();
-              initialize();
-            }, 500);
-          }
-
           updateLocal(task.id, task.tasks, "tasks");
+          checkIfComplete();
         });
 
         deleteEntryBtn.addEventListener("click", () => {
@@ -238,17 +232,47 @@ export function initialize() {
           item.classList.add("removing");
           setTimeout(() => item.remove(), 500);
           storeLocal(tasks);
+          checkIfComplete();
         });
 
         wareName.addEventListener("input", (entryInner) => {
           entry.ware = entryInner.target.value;
           updateLocal(task.id, task.tasks, "tasks");
+          checkIfComplete();
         });
 
         needCount.addEventListener("input", (entryInner) => {
-          entry.need = Number(entryInner.target.value);
-          updateLocal(task.id, task.tasks, "tasks");
+          entry.need = Number(entryInner.target.value); //forstå dette
+          checkIfComplete();
         });
+
+        needCount.addEventListener("blur", (entryInner) => {
+          if (entry.need <= 0) {
+            entry.need = 1;
+            entryInner.target.value = 1;
+          }
+          if (entry.bought >= entry.need) {
+            console.log("needCount");
+            entry.bought = entry.need;
+            wareCount.innerHTML = entry.bought;
+            entry.complete = true;
+            item.classList.add("complete");
+          }
+          updateLocal(task.id, task.tasks, "tasks");
+          checkIfComplete();
+        });
+
+        function checkIfComplete() {
+          if (task.tasks.every((entry) => entry.complete)) {
+            task.isDone = true;
+
+            card.classList.add("removing");
+            setTimeout(() => {
+              card.remove();
+              initialize();
+            }, 500);
+          }
+        }
         //entryInner shorthand brugt for læsbarhed (forvirrende med to 'entry's)
         //NOTE TO SELF:
         //både entry og entryInner er shorthands defineret i arrow-funktioner
@@ -386,32 +410,105 @@ function removeSelf(id) {
   }, 500);
 }
 
-//debug:
-export function debugOptions(slot) {
-  const debugWindow = document.createElement("div");
-  debugWindow.id = "debugWindow";
-  debugWindow.innerHTML = `
-    <button id='debugClearLocal'>Clear local storage</button>
-    <button id='debugLogLocal'>Log local storage</button>
-    <button id='debugPrintPlaceholderData'>Print placeholder data</button>
+export function settings() {
+  windowCont.innerHTML = ""; //cleanup, for en sikkerheds skyld
+  windowCont.classList.add("active");
+  const settingsWindow = document.createElement("div");
+  settingsWindow.id = "settingsWindow";
+  let currentTheme = localStorage.getItem("preferedTheme");
+  settingsWindow.innerHTML = `
+    <h3>Settings</h3>
+    <h4>Temaer</h4>
+    <button id='settingsThemeDef' ${
+      currentTheme === "system" ? "class='active'" : ""
+    }>Systemstandard (${
+    window.matchMedia("(prefers-color-scheme: dark)").matches ? "Mørk" : "Lys"
+  })</button>
+    <button id='settingsThemeLight' ${
+      currentTheme === "light" ? "class='active'" : ""
+    }'>Lys</button>
+    <button id='settingsThemeDark' ${
+      currentTheme === "dark" ? "class='active'" : ""
+    }>Mørk</button>
+    <h4>Debug</h4>
+    <button id='settingsClearLocal'>Clear local storage</button>
+    <button id='settingsLogLocal'>Log local storage</button>
+    <button id='settingsPrintPlaceholderData'>Print placeholder data</button>
+    <h4>Sådan bruger du appen:</h4>
+    <p>Du kan vælge at lave en ny opgave eller en liste ved at klikke på knappen
+     "📝" eller "🛒" i toppen af siden. Efter disse er lavet, kan du frit redigere dem.
+     Du kan trykke færdiggør på en opgave for at flytte dem til arkiv-listen, hvorfra
+     du kan sende dem tilbage til den aktive To-Do liste ved at trykke på "Fortryd Færdiggørelse".
+     Lister bliver automatisk flyttet til arkiv-listen når alle deres krav er fuldendt. Ændr på
+     kravene for at automatisk flytte dem tilbage til den aktive liste.</p>
+    
+    <button id='settingsClose'>Luk indstillinger</button>
     `;
-  slot.prepend(debugWindow);
+  settingsWindow.classList = "window zoomIn";
+  windowCont.prepend(settingsWindow);
+  const settingsClose = document.getElementById("settingsClose");
+  const settingsThemeDef = document.getElementById("settingsThemeDef");
+  const settingsThemeLight = document.getElementById("settingsThemeLight");
+  const settingsThemeDark = document.getElementById("settingsThemeDark");
+  const settingsClearLocal = document.getElementById("settingsClearLocal");
+  const settingsLogLocal = document.getElementById("settingsLogLocal");
+  const settingsPrintPlaceholderData = document.getElementById(
+    "settingsPrintPlaceholderData"
+  );
 
-  const debugClearLocal = document.getElementById("debugClearLocal");
-  const debugLogLocal = document.getElementById("debugLogLocal");
-  const debugPrintPlaceholderData = document.getElementById("debugPrintPlaceholderData");
+  settingsClose.addEventListener("click", () => {
+    windowCont.classList.remove("active");
+    settingsWindow.classList.remove("zoomIn");
+    settingsWindow.offsetHeight; //trigger reflow
+    settingsWindow.classList.add("zoomOut");
+    settingsWindow.addEventListener("animationend", () => {
+      console.log("ZoomOut on confirmWindow ended");
+      windowCont.innerHTML = "";
+    });
+  });
 
-  debugClearLocal.addEventListener("click", () => {
+  //vælg tema:
+
+  settingsThemeDef.addEventListener("click", () => {
+    setPreferredTheme("system");
+    html.classList = window.matchMedia("(prefers-color-scheme: dark)").matches
+      ? "dark"
+      : "light";
+    console.log("Tema: Systemstandard");
+    settingsThemeDark.classList="";
+    settingsThemeLight.classList="";
+    settingsThemeDef.classList.add("active");
+  });
+
+  settingsThemeLight.addEventListener("click", () => {
+    setPreferredTheme("light");
+    html.classList = "light";
+    console.log("Tema: Lys");
+    settingsThemeDark.classList="";
+    settingsThemeLight.classList.add("active");
+    settingsThemeDef.classList="";
+  });
+
+  settingsThemeDark.addEventListener("click", () => {
+    setPreferredTheme("dark");
+    html.classList = "dark";
+    console.log("Tema: Mørk");
+    settingsThemeDark.classList.add("active");
+    settingsThemeLight.classList="";
+    settingsThemeDef.classList="";
+  });
+
+  //debug:
+  settingsClearLocal.addEventListener("click", () => {
     tasks.length = 0; //glemmer i-hukommelse data
     clearLocal(); //glemmer data i localStorage
     console.log("Glemt opgaver i localStorage og fra nuværende instans");
     initialize();
     console.log("Genindlæst");
   });
-  // debugStoreLocal.addEventListener("click", () => storeLocal(tasks));
-  debugLogLocal.addEventListener("click", () => logLocal());
-debugPrintPlaceholderData.addEventListener("click", async () => {
-  await printPlaceholderData("../Model/placeHolderData.json");
-  initialize();
-});
+  settingsLogLocal.addEventListener("click", () => logLocal());
+  settingsPrintPlaceholderData.addEventListener("click", async () => {
+    await printPlaceholderData("../Model/placeHolderData.json");
+    initialize();
+  });
 }

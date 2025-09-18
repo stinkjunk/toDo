@@ -8,3 +8,16 @@ html {
     --accnt2: rgb(190, 8, 8);
     --accnt3: rgb(7, 206, 0);
 }
+
+html.dark {
+    --bgcol: #111111;
+    --bgGreyed: #666666;
+    --bgcol2: #161616;
+    --txtcol: #eeeeee;
+    --shadowcol: #cecece3d;
+    /* --accnt1: rgb(106, 200, 255); */
+    --accnt1: var(--bgcol);
+    --accnt2: rgb(190, 8, 8);
+    --accnt3: rgb(7, 206, 0);
+}
+

@@ -1,4 +1,5 @@
 export const tasks = [];
+export let preferedTheme = localStorage.getItem("preferedTheme") || "system"; //hvis ikke opdateret, så sæt til system
 
 export function loadLocal() {
   const storedTasks = localStorage.getItem("tasks");
@@ -53,4 +54,10 @@ export async function printPlaceholderData(adress) {
 
   tasks.push(...placeholderData); 
   storeLocal(tasks); 
+}
+
+export function setPreferredTheme(theme) {
+  preferedTheme = theme; // opdater in-memory variabel
+  localStorage.setItem("preferedTheme", theme); // gem i localStorage
+  console.log("Tema opdateret til:", theme);
 }

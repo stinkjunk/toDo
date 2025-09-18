@@ -1,6 +1,22 @@
 <!DOCTYPE html>
-<html lang="da">
+<html lang="da" [...]>
   <head>
+    <script>
+      (function () {
+        const storedTheme = localStorage.getItem("preferedTheme");
+        let theme;
+        if (storedTheme === "system") {
+        theme = window.matchMedia("(prefers-color-scheme: dark)").matches
+          ? "dark"
+          : "light";
+        } else if (storedTheme === "light") {
+          theme = "light";
+        } else {
+          theme = "dark";
+        }
+        document.documentElement.classList.add(theme);
+      })();
+    </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>To-Do</title>
@@ -20,8 +36,9 @@
       <div class="top">
         <h1>To-Do</h1>
         <div class="headerTopButtons">
-        <button class="createNew" id="createNewTask">📝</button>
-        <button class="createNew" id="createNewList">🛒</button>
+          <button class="createNew" id="createNewTask">📝</button>
+          <button class="createNew" id="createNewList">🛒</button>
+          <button class="createNew" id="settings">⚙️</button>
         </div>
       </div>
       <div class="options">

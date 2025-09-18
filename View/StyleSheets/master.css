@@ -12,9 +12,30 @@ input[type="number"] {
   -moz-appearance: textfield;
 }
 
+input {
+  color: var(--textcol);
+}
+
+.taskDesc {
+  color: var(--textcol);
+}
+
+html.dark button#activeBtn.active,
+html.dark button#archiveBtn.active,
+html.dark button.taskDoneBtn,
+html.dark button.addEntry,
+html.dark button.numBtn {
+  color: var(--textcol);
+}
+
 html,
 body {
   overflow-x: hidden;
+}
+
+input,
+textarea {
+  resize: none;
 }
 
 body {
@@ -47,11 +68,17 @@ h1 {
   cursor: pointer;
   font-size: 110%;
   transition: all 0.5s ease-in-out;
+
   border-radius: 10000px;
   padding: 0.6ch;
   padding-left: 1ch;
   padding-right: 1ch;
 }
+
+/* #activeBtn.smooth,
+#archiveBtn.smooth {
+  transition: all 0.5s ease-in-out;
+} */
 
 #activeBtn.active,
 #archiveBtn.active {
@@ -332,6 +359,10 @@ button {
   gap: 1ch;
 }
 
+.window#settingsWindow {
+  width: 80%;
+}
+
 .window .buttons {
   padding: 1ch;
   display: flex;
@@ -349,6 +380,26 @@ button {
 .window > * {
   margin: 0;
   padding: 0;
+}
+
+#settingsWindow > button {
+  border-radius: 10000px;
+  padding: 1ch;
+  transition: all 0.5s ease-in-out;
+}
+
+html.dark #settingsWindow > button.active {
+  border : 1px solid var(--txtcol);
+}
+
+#settingsWindow > button.active {
+  border : 1px solid var(--accnt1);
+  background-color: var(--bgcol);
+  color: var(--accnt1);
+}
+
+html.dark #settingsWindow > button {
+  color: var(--textcol);
 }
 
 /*Animationer*/
@@ -381,7 +432,6 @@ button {
     grid-template-columns: 1fr 1fr;
     gap: 1ch;
     padding: 3ch;
-
   }
 }
 
@@ -396,8 +446,3 @@ button {
     grid-template-columns: 1fr 1fr 1fr 1fr;
   }
 }
-
-
-
-
-

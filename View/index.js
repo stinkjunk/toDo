@@ -1,11 +1,12 @@
 // import { createTaskWindow, initialize, taskCreator } from "../Controller/controller.js";
-import { initialize, addTask, addList, debugOptions} from "../Controller/controller.js";
+import { initialize, addTask, addList, settings} from "../Controller/controller.js";
 
 const taskList = document.getElementById("taskList");
 const archiveList = document.getElementById("archiveList");
 const tasks = JSON.parse(localStorage.getItem("tasks"));
 const createNewTaskBtn = document.getElementById("createNewTask");
 const createNewListBtn = document.getElementById("createNewList");
+const settingsBtn = document.getElementById("settings");
 const brouchure = document.getElementById("brouchure");
 const main = document.querySelector("main");
 console.log("tasks:", tasks);
@@ -13,12 +14,6 @@ console.log("tasks:", tasks);
 const activeBtn = document.getElementById("activeBtn");
 const archiveBtn = document.getElementById("archiveBtn");
 
-//aktiver debug-funktioner
-const debug = false;
-//------------------------
-if (debug === true) {
-debugOptions(main);
-}
 
 archiveBtn.addEventListener("click", () => {
   brouchure.classList = "archivedPage";
@@ -41,6 +36,7 @@ if (tasks !== null) {
 // createNewTaskBtn.addEventListener("click", () => createTaskWindow(true));
 createNewTaskBtn.addEventListener("click", addTask);
 createNewListBtn.addEventListener("click", addList);
+settingsBtn.addEventListener("click", settings);
 
 
 // createTaskWindow(true);
